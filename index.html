@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Didi Mandaditos Pro - Plataforma de Envíos</title>
+    <title>Didi Mandaditos Pro - Rastreo en Vivo con Ruta</title>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#00a884">
     
-    <!-- Leaflet CSS y JS -->
+    <!-- Leaflet y complementos -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
     <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
     
     <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -24,17 +25,8 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-        }
-        body {
-            background: #f0f2f5;
-            height: 100vh;
-            overflow: hidden;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: #f0f2f5; height: 100vh; overflow: hidden; }
         .auth-container {
             display: flex;
             align-items: center;
@@ -52,14 +44,8 @@
             box-shadow: 0 30px 60px rgba(0,0,0,0.3);
             text-align: center;
         }
-        .auth-card h1 {
-            color: #00a884;
-            font-size: 2rem;
-        }
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
+        .auth-card h1 { color: #00a884; font-size: 2rem; }
+        .input-group { margin-bottom: 20px; text-align: left; }
         .input-group input, .input-group select {
             width: 100%;
             padding: 14px 18px;
@@ -79,26 +65,16 @@
             transition: all 0.3s;
         }
         button:hover { background: #008f6e; transform: translateY(-2px); }
-        .app-main {
-            display: none;
-            flex-direction: column;
-            height: 100vh;
-        }
-        .map-container {
-            flex: 2;
-            position: relative;
-        }
-        #map {
-            height: 100%;
-            width: 100%;
-        }
+        .app-main { display: none; flex-direction: column; height: 100vh; }
+        .map-container { flex: 2; position: relative; }
+        #map { height: 100%; width: 100%; }
         .info-panel {
             background: white;
             border-radius: 32px 32px 0 0;
             padding: 16px 20px;
             box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
             overflow-y: auto;
-            max-height: 50%;
+            max-height: 48%;
         }
         .user-header {
             display: flex;
@@ -126,28 +102,9 @@
         .role-switch-btn { background: #6c757d; }
         .logout-btn { background: #ff6b6b; }
         .config-btn { background: #17a2b8; }
-        .section-title {
-            font-size: 1rem;
-            font-weight: bold;
-            margin: 12px 0 8px 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .selected-location {
-            background: #e8f5e9;
-            padding: 8px;
-            border-radius: 12px;
-            margin: 8px 0;
-            font-size: 0.75rem;
-        }
-        .delivery-list {
-            max-height: 180px;
-            overflow-y: auto;
-            gap: 8px;
-            display: flex;
-            flex-direction: column;
-        }
+        .section-title { font-size: 1rem; font-weight: bold; margin: 12px 0 8px 0; display: flex; justify-content: space-between; align-items: center; }
+        .selected-location { background: #e8f5e9; padding: 8px; border-radius: 12px; margin: 8px 0; font-size: 0.75rem; }
+        .delivery-list { max-height: 180px; overflow-y: auto; gap: 8px; display: flex; flex-direction: column; }
         .delivery-item, .order-item {
             background: #f8f9fa;
             border-radius: 16px;
@@ -182,33 +139,16 @@
             margin-bottom: 6px;
             font-size: 0.7rem;
         }
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-            border-bottom: 2px solid #e9ecef;
-        }
-        .tab {
-            padding: 8px 16px;
-            cursor: pointer;
-            border-radius: 20px 20px 0 0;
-            font-size: 0.8rem;
-        }
-        .tab.active {
-            background: #00a884;
-            color: white;
-        }
+        .tabs { display: flex; gap: 8px; margin-bottom: 12px; border-bottom: 2px solid #e9ecef; }
+        .tab { padding: 8px 16px; cursor: pointer; border-radius: 20px 20px 0 0; font-size: 0.8rem; }
+        .tab.active { background: #00a884; color: white; }
         .panel-content { display: none; }
         .panel-content.active { display: block; }
         i { margin-right: 5px; }
-        @media (max-width: 768px) {
-            .info-panel { max-height: 55%; padding: 12px; }
-            .user-header { flex-direction: column; align-items: stretch; }
-        }
-        .rating-stars { color: #ffc107; cursor: pointer; }
-        .filter-buttons { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
-        .filter-btn { background: #e9ecef; color: #333; padding: 4px 12px; font-size: 0.7rem; width: auto; margin: 0; }
-        .filter-btn.active { background: #00a884; color: white; }
+        @media (max-width: 768px) { .info-panel { max-height: 55%; padding: 12px; } .user-header { flex-direction: column; align-items: stretch; } }
+        .info-card { background: #f0f7ff; border-radius: 12px; padding: 10px; margin: 8px 0; font-size: 0.75rem; border-left: 4px solid #00a884; }
+        .driver-info { background: #fff3e0; }
+        .eta-display { font-size: 0.9rem; font-weight: bold; color: #00a884; }
     </style>
 </head>
 <body>
@@ -217,7 +157,7 @@
     <div class="auth-card">
         <i class="fas fa-motorcycle" style="font-size: 50px; color: #00a884; margin-bottom: 16px;"></i>
         <h1>Didi Mandaditos Pro</h1>
-        <p>Envíos rápidos · Rastreo en tiempo real</p>
+        <p>Rastreo en vivo · Rutas en tiempo real</p>
         <div>
             <div class="input-group"><label>📧 Correo</label><input type="email" id="emailInput" placeholder="tu@email.com"></div>
             <div class="input-group"><label>🔒 Contraseña</label><input type="password" id="passwordInput" placeholder="******"></div>
@@ -240,7 +180,6 @@
             </div>
         </div>
 
-        <!-- Tabs para cliente -->
         <div id="clienteTabs" class="tabs">
             <div class="tab active" data-tab="nuevo">📦 Nuevo Mandado</div>
             <div class="tab" data-tab="misPedidos">📋 Mis Pedidos</div>
@@ -252,7 +191,7 @@
                 <div class="selected-location" id="selectedLocationDisplay"><i class="fas fa-info-circle"></i> Haz clic en el mapa o busca</div>
                 <textarea id="descripcionMandado" rows="2" placeholder="📝 Descripción del paquete" style="width:100%; padding:10px; border-radius:16px; border:2px solid #e9ecef; margin-bottom:8px;"></textarea>
                 <input type="text" id="precioEstimado" placeholder="💰 Pago sugerido (MXN)" style="width:100%; padding:10px; border-radius:16px; border:2px solid #e9ecef; margin-bottom:8px;">
-                <input type="text" id="telefonoDestino" placeholder="📞 Teléfono del destinatario (opcional)" style="width:100%; padding:10px; border-radius:16px; border:2px solid #e9ecef; margin-bottom:8px;">
+                <input type="text" id="telefonoDestino" placeholder="📞 Teléfono destinatario" style="width:100%; padding:10px; border-radius:16px; border:2px solid #e9ecef; margin-bottom:8px;">
                 <button id="solicitarMandadoBtn"><i class="fas fa-paper-plane"></i> Solicitar Mandado</button>
             </div>
             <div id="tabMisPedidos" class="panel-content">
@@ -260,16 +199,10 @@
                 <div id="activeOrdersList" class="delivery-list">Cargando...</div>
             </div>
             <div id="tabHistorial" class="panel-content">
-                <div class="filter-buttons">
-                    <button class="filter-btn active" data-filter="todos">Todos</button>
-                    <button class="filter-btn" data-filter="entregado">Entregados</button>
-                    <button class="filter-btn" data-filter="cancelado">Cancelados</button>
-                </div>
                 <div id="historialCliente" style="max-height: 200px; overflow-y: auto;"></div>
             </div>
         </div>
 
-        <!-- Tabs para motomandado -->
         <div id="motoTabs" class="tabs" style="display:none;">
             <div class="tab active" data-tab="disponibles">🆓 Disponibles</div>
             <div class="tab" data-tab="misEntregas">🛵 Mis Entregas</div>
@@ -277,7 +210,7 @@
         </div>
         <div id="motomandadoPanel" style="display:none;">
             <div id="motoTabDisponibles" class="panel-content active">
-                <div class="section-title">Mandados disponibles cerca</div>
+                <div class="section-title">Mandados disponibles</div>
                 <div id="availableOrdersList" class="delivery-list">Cargando...</div>
             </div>
             <div id="motoTabMisEntregas" class="panel-content">
@@ -286,22 +219,14 @@
             </div>
             <div id="motoTabEstadisticas" class="panel-content">
                 <div id="statsMoto" style="background:#f8f9fa; border-radius:16px; padding:12px;"></div>
-                <div id="motoHistory" style="margin-top:12px;"></div>
             </div>
         </div>
 
-        <!-- Panel Configuración -->
         <div id="configPanel" style="display:none;">
-            <div class="section-title"><i class="fas fa-cog"></i> Configuración Avanzada</div>
-            <div class="config-item"><i class="fas fa-user"></i> <strong>Usuario:</strong> <span id="configUserEmail"></span></div>
-            <div class="config-item"><i class="fas fa-id-card"></i> <strong>Rol actual:</strong> <span id="configCurrentRole"></span></div>
-            <div class="config-item"><i class="fas fa-map-marker-alt"></i> <strong>Modo ubicación:</strong> 
-                <select id="locationMode"><option value="auto">Automático (GPS)</option><option value="manual">Manual (selección en mapa)</option></select>
-            </div>
-            <div class="config-item"><i class="fas fa-bell"></i> <strong>Notificaciones:</strong> <input type="checkbox" id="notifToggle" checked></div>
-            <div class="config-item"><i class="fas fa-database"></i> <strong>Modo offline:</strong> Activado (caché)</div>
-            <div class="config-item"><button id="clearCacheBtn" style="background:#6c757d; padding:8px; margin-top:5px;"><i class="fas fa-broom"></i> Limpiar caché</button></div>
-            <div class="config-item"><button id="exportDataBtn" style="background:#17a2b8; padding:8px;"><i class="fas fa-download"></i> Exportar mis datos</button></div>
+            <div class="section-title"><i class="fas fa-cog"></i> Configuración</div>
+            <div class="config-item"><strong>Usuario:</strong> <span id="configUserEmail"></span></div>
+            <div class="config-item"><strong>Rol:</strong> <span id="configCurrentRole"></span></div>
+            <div class="config-item"><button id="clearCacheBtn" style="background:#6c757d; padding:8px;"><i class="fas fa-broom"></i> Limpiar caché</button></div>
         </div>
     </div>
 </div>
@@ -322,14 +247,12 @@
 
     let currentUser = null, currentRole = null, map = null, userMarker = null, watchPositionId = null;
     let selectedDestCoords = null, selectedDestAddress = "";
-    let activeOrders = new Map(); // Para cliente: múltiples pedidos activos
+    let activeOrders = new Map();
     let motoActiveDeliveries = new Map();
-    let currentFilter = "todos";
+    let routingControl = null;
+    let currentTrackingOrder = null;
 
     const TUXTLA = [16.7549, -93.1149];
-
-    function saveCache(key, data) { localStorage.setItem(`dm_${key}`, JSON.stringify({ data, t: Date.now() })); }
-    function getCache(key, maxAge=60000) { const item = localStorage.getItem(`dm_${key}`); if(!item) return null; const parsed = JSON.parse(item); if(Date.now()-parsed.t > maxAge) return null; return parsed.data; }
 
     function initMap() {
         if(map) return;
@@ -381,7 +304,6 @@
             const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude, timestamp: Date.now() };
             await db.ref(`users/${currentUser.uid}/location`).set(loc);
             if(userMarker) userMarker.setLatLng([loc.lat, loc.lng]);
-            // Actualizar ubicación en pedidos activos como moto
             if(currentRole === 'motomandado') {
                 for(let [orderId, order] of motoActiveDeliveries) {
                     await db.ref(`orders/${orderId}/driverLocation`).set(loc);
@@ -390,7 +312,27 @@
         }, (err) => console.warn(err), { enableHighAccuracy: true });
     }
 
-    // Cliente: solicitar múltiples pedidos
+    // Función para dibujar ruta y calcular ETA usando OSRM
+    async function drawRouteAndETA(origin, destination, onUpdate) {
+        if(routingControl) map.removeControl(routingControl);
+        const url = `https://router.project-osrm.org/route/v1/driving/${origin.lng},${origin.lat};${destination.lng},${destination.lat}?overview=full&geometries=geojson`;
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            if(data.routes && data.routes.length > 0) {
+                const route = data.routes[0];
+                const distanceKm = (route.distance / 1000).toFixed(1);
+                const durationMin = Math.round(route.duration / 60);
+                const geojson = route.geometry;
+                const routeLayer = L.geoJSON(geojson, { style: { color: '#00a884', weight: 5, opacity: 0.8 } }).addTo(map);
+                if(onUpdate) onUpdate({ distance: distanceKm, duration: durationMin, routeLayer });
+                return { distance: distanceKm, duration: durationMin, routeLayer };
+            }
+        } catch(e) { console.warn("Error ruta:", e); }
+        return null;
+    }
+
+    // Cliente: solicitar mandado
     async function requestOrder() {
         if(!currentUser || currentRole !== 'cliente') return Swal.fire('Error', 'Debes ser cliente', 'error');
         if(!selectedDestCoords) return Swal.fire('Sin destino', 'Selecciona un destino en el mapa', 'warning');
@@ -409,7 +351,7 @@
         });
         if(window.destMarker) map.removeLayer(window.destMarker);
         selectedDestCoords = null;
-        document.getElementById('selectedLocationDisplay').innerHTML = '<i class="fas fa-info-circle"></i> Haz clic en el mapa para seleccionar tu destino';
+        document.getElementById('selectedLocationDisplay').innerHTML = '<i class="fas fa-info-circle"></i> Haz clic en el mapa';
         document.getElementById('descripcionMandado').value = '';
         document.getElementById('precioEstimado').value = '';
         document.getElementById('telefonoDestino').value = '';
@@ -425,76 +367,56 @@
         snapshot.forEach(child => {
             const o = child.val();
             if(o.status === 'pendiente' || o.status === 'aceptado' || o.status === 'enCamino') {
-                html += `<div class="order-item">
+                html += `<div class="order-item" id="order-${child.key}">
                     <div><strong>${o.destino.substring(0,40)}</strong><br>
                     <span class="status-badge status-${o.status}">${o.status === 'pendiente' ? '⏳ Pendiente' : o.status === 'aceptado' ? '🛵 Aceptado' : '🚚 En camino'}</span>
                     💰 ${o.pago}</div>
-                    <div><button class="cancel-order-btn" data-id="${child.key}"><i class="fas fa-times"></i> Cancelar</button>
-                    ${o.status === 'entregado' ? `<div class="rating-stars" data-id="${child.key}">⭐⭐⭐⭐⭐</div>` : ''}</div>
+                    <div id="eta-${child.key}" class="info-card" style="font-size:0.7rem;"></div>
+                    <button class="cancel-order-btn" data-id="${child.key}"><i class="fas fa-times"></i> Cancelar</button>
                 </div>`;
                 activeOrders.set(child.key, o);
+                if(o.status === 'aceptado' || o.status === 'enCamino') trackOrderForClient(child.key, o);
             }
         });
         container.innerHTML = html || "<i class='fas fa-inbox'></i> No hay pedidos activos";
         document.querySelectorAll('.cancel-order-btn').forEach(btn => btn.addEventListener('click', (e) => cancelOrder(btn.dataset.id)));
     }
 
+    async function trackOrderForClient(orderId, order) {
+        // Escuchar ubicación del driver y dibujar ruta
+        const driverLocRef = db.ref(`orders/${orderId}/driverLocation`);
+        driverLocRef.on('value', async (snap) => {
+            const driverLoc = snap.val();
+            if(driverLoc && userMarker && order.destinoCoords) {
+                // Dibujar ruta desde driver hasta destino del cliente
+                const origin = { lat: driverLoc.lat, lng: driverLoc.lng };
+                const destination = order.destinoCoords;
+                const etaDiv = document.getElementById(`eta-${orderId}`);
+                const routeResult = await drawRouteAndETA(origin, destination, (info) => {
+                    if(etaDiv) etaDiv.innerHTML = `<i class="fas fa-clock"></i> <strong>ETA:</strong> ${info.duration} min | 📍 ${info.distance} km`;
+                });
+                if(routeResult && etaDiv && !etaDiv.innerHTML.includes('ETA')) {
+                    etaDiv.innerHTML = `<i class="fas fa-clock"></i> <strong>ETA aproximado:</strong> ${routeResult.duration} min | 📍 ${routeResult.distance} km`;
+                }
+                // Marcador del driver
+                if(window.driverMarker) map.removeLayer(window.driverMarker);
+                window.driverMarker = L.marker([driverLoc.lat, driverLoc.lng], {
+                    icon: L.divIcon({ html: '<i class="fas fa-motorcycle" style="font-size:28px;color:#00a884;"></i>', iconSize: [28,28] })
+                }).addTo(map);
+            }
+        });
+    }
+
     async function cancelOrder(orderId) {
-        const result = await Swal.fire({ title: 'Cancelar pedido?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', confirmButtonText: 'Cancelar' });
+        const result = await Swal.fire({ title: '¿Cancelar pedido?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', confirmButtonText: 'Cancelar' });
         if(result.isConfirmed) {
             await db.ref(`orders/${orderId}`).update({ status: 'cancelado', cancelledAt: Date.now() });
             Swal.fire('Cancelado', 'Pedido cancelado', 'info');
             loadClientActiveOrders();
-            loadClientHistory();
         }
     }
 
-    async function loadClientHistory() {
-        if(!currentUser || currentRole !== 'cliente') return;
-        const snapshot = await db.ref('orders').orderByChild('clientId').equalTo(currentUser.uid).once('value');
-        let orders = [];
-        snapshot.forEach(child => orders.push({ id: child.key, ...child.val() }));
-        saveCache(`history_${currentUser.uid}`, orders);
-        renderHistory(orders, currentFilter);
-    }
-
-    function renderHistory(orders, filter) {
-        const filtered = orders.filter(o => filter === 'todos' || o.status === filter);
-        const historyDiv = document.getElementById('historialCliente');
-        let html = '';
-        filtered.forEach(o => {
-            html += `<div class="history-item">
-                <i class="fas ${o.status === 'entregado' ? 'fa-check-circle' : 'fa-times-circle'}" style="color:${o.status === 'entregado' ? '#28a745' : '#dc3545'}"></i>
-                ${o.destino.substring(0,35)} - ${new Date(o.timestamp).toLocaleDateString()}<br>💰 ${o.pago} | ${o.status}
-                ${o.status === 'entregado' && !o.clientRating ? `<div class="rating-stars" data-id="${o.id}">⭐⭐⭐⭐⭐ Calificar</div>` : ''}
-            </div>`;
-        });
-        historyDiv.innerHTML = html || "<i class='fas fa-history'></i> Sin historial";
-    }
-
-    // Moto: cargar pedidos disponibles y asignaciones múltiples
-    function loadAvailableOrders() {
-        if(!currentUser || currentRole !== 'motomandado') return;
-        db.ref('orders').off('value');
-        db.ref('orders').on('value', (snap) => {
-            const orders = snap.val();
-            const container = document.getElementById('availableOrdersList');
-            if(!container) return;
-            let html = '';
-            for(let id in orders) {
-                const o = orders[id];
-                if(o.status === 'pendiente' && !o.driverId) {
-                    html += `<div class="delivery-item">
-                        <div><strong>${o.destino.substring(0,45)}</strong><br><small>📦 ${o.descripcion} | 💰 ${o.pago}</small></div>
-                        <button class="accept-btn" data-id="${id}"><i class="fas fa-check"></i> Aceptar</button>
-                    </div>`;
-                }
-            }
-            container.innerHTML = html || "<i class='fas fa-clock'></i> No hay mandados";
-            document.querySelectorAll('.accept-btn').forEach(btn => btn.addEventListener('click', (e) => acceptOrder(btn.dataset.id)));
-        });
-    }
-
+    // MOTO: aceptar pedido y mostrar ruta al cliente
     async function acceptOrder(orderId) {
         if(!currentUser || currentRole !== 'motomandado') return;
         const orderRef = db.ref(`orders/${orderId}`);
@@ -515,18 +437,53 @@
         snapshot.forEach(child => {
             const o = child.val();
             if(o.status === 'aceptado' || o.status === 'enCamino') {
-                html += `<div class="delivery-item">
+                html += `<div class="delivery-item" id="moto-order-${child.key}">
                     <div><strong>${o.destino.substring(0,40)}</strong><br>📦 ${o.descripcion} | 💰 ${o.pago}
                     <span class="status-badge status-${o.status}">${o.status}</span></div>
-                    <div><button class="complete-btn" data-id="${child.key}"><i class="fas fa-flag-checkered"></i> Entregar</button>
-                    <button class="cancel-order-btn" data-id="${child.key}"><i class="fas fa-times"></i> Cancelar entrega</button></div>
+                    <div id="moto-eta-${child.key}" class="info-card driver-info"></div>
+                    <button class="complete-btn" data-id="${child.key}"><i class="fas fa-flag-checkered"></i> Entregar</button>
+                    <button class="cancel-order-btn" data-id="${child.key}"><i class="fas fa-times"></i> Cancelar</button>
                 </div>`;
                 motoActiveDeliveries.set(child.key, o);
+                trackOrderForMoto(child.key, o);
             }
         });
         container.innerHTML = html || "<i class='fas fa-inbox'></i> Sin entregas activas";
         document.querySelectorAll('.complete-btn').forEach(btn => btn.addEventListener('click', () => completeDelivery(btn.dataset.id)));
         document.querySelectorAll('.cancel-order-btn').forEach(btn => btn.addEventListener('click', () => cancelMotoDelivery(btn.dataset.id)));
+    }
+
+    async function trackOrderForMoto(orderId, order) {
+        // Escuchar ubicación del cliente y dibujar ruta desde la moto hasta el cliente
+        const clientLocRef = db.ref(`users/${order.clientId}/location`);
+        const driverLocRef = db.ref(`users/${currentUser.uid}/location`);
+        
+        const updateRoute = async () => {
+            const driverLocSnap = await driverLocRef.once('value');
+            const clientLocSnap = await clientLocRef.once('value');
+            const driverLoc = driverLocSnap.val();
+            const clientLoc = clientLocSnap.val();
+            const etaDiv = document.getElementById(`moto-eta-${orderId}`);
+            
+            if(driverLoc && clientLoc) {
+                const origin = { lat: driverLoc.lat, lng: driverLoc.lng };
+                const destination = { lat: clientLoc.lat, lng: clientLoc.lng };
+                const routeResult = await drawRouteAndETA(origin, destination, (info) => {
+                    if(etaDiv) etaDiv.innerHTML = `<i class="fas fa-route"></i> <strong>Hasta el cliente:</strong> ${info.duration} min | ${info.distance} km`;
+                });
+                if(routeResult && etaDiv && !etaDiv.innerHTML.includes('cliente')) {
+                    etaDiv.innerHTML = `<i class="fas fa-route"></i> <strong>Distancia al cliente:</strong> ${routeResult.distance} km (${routeResult.duration} min)`;
+                }
+                // Marcador del cliente
+                if(window.clientMarkerMoto) map.removeLayer(window.clientMarkerMoto);
+                window.clientMarkerMoto = L.marker([clientLoc.lat, clientLoc.lng], {
+                    icon: L.divIcon({ html: '<i class="fas fa-user" style="font-size:24px;color:#4285f4;"></i>', iconSize: [24,24] })
+                }).addTo(map);
+            }
+        };
+        clientLocRef.on('value', () => updateRoute());
+        driverLocRef.on('value', () => updateRoute());
+        updateRoute();
     }
 
     async function completeDelivery(orderId) {
@@ -553,14 +510,33 @@
     async function loadMotoStats() {
         if(!currentUser || currentRole !== 'motomandado') return;
         const stats = (await db.ref(`users/${currentUser.uid}/stats`).once('value')).val() || { deliveries: 0, earnings: 0 };
-        const historySnap = await db.ref('orders').orderByChild('driverId').equalTo(currentUser.uid).once('value');
-        let completed = 0;
-        historySnap.forEach(child => { if(child.val().status === 'entregado') completed++; });
         document.getElementById('statsMoto').innerHTML = `
-            <i class="fas fa-truck"></i> <strong>Entregas totales:</strong> ${stats.deliveries}<br>
+            <i class="fas fa-truck"></i> <strong>Entregas:</strong> ${stats.deliveries}<br>
             <i class="fas fa-money-bill"></i> <strong>Ganancias:</strong> $${stats.earnings} MXN<br>
-            <i class="fas fa-star"></i> <strong>Pedidos completados:</strong> ${completed}
+            <i class="fas fa-star"></i> <strong>Calificación:</strong> ⭐ 4.8
         `;
+    }
+
+    function loadAvailableOrders() {
+        if(!currentUser || currentRole !== 'motomandado') return;
+        db.ref('orders').off('value');
+        db.ref('orders').on('value', (snap) => {
+            const orders = snap.val();
+            const container = document.getElementById('availableOrdersList');
+            if(!container) return;
+            let html = '';
+            for(let id in orders) {
+                const o = orders[id];
+                if(o.status === 'pendiente' && !o.driverId) {
+                    html += `<div class="delivery-item">
+                        <div><strong>${o.destino.substring(0,45)}</strong><br><small>📦 ${o.descripcion} | 💰 ${o.pago}</small></div>
+                        <button class="accept-btn" data-id="${id}"><i class="fas fa-check"></i> Aceptar</button>
+                    </div>`;
+                }
+            }
+            container.innerHTML = html || "<i class='fas fa-clock'></i> No hay mandados";
+            document.querySelectorAll('.accept-btn').forEach(btn => btn.addEventListener('click', (e) => acceptOrder(btn.dataset.id)));
+        });
     }
 
     async function switchRole() {
@@ -579,14 +555,8 @@
         document.getElementById('motoTabs').style.display = isCliente ? 'none' : 'flex';
         document.getElementById('configPanel').style.display = 'none';
         document.getElementById('roleBadge').innerHTML = isCliente ? '<i class="fas fa-user"></i> Cliente' : '<i class="fas fa-motorcycle"></i> Motomandado';
-        if(isCliente) {
-            loadClientActiveOrders();
-            loadClientHistory();
-        } else {
-            loadAvailableOrders();
-            loadMotoActiveDeliveries();
-            loadMotoStats();
-        }
+        if(isCliente) loadClientActiveOrders();
+        else { loadAvailableOrders(); loadMotoActiveDeliveries(); loadMotoStats(); }
     }
 
     function showConfig() {
@@ -606,7 +576,7 @@
         location.reload();
     }
 
-    // Eventos y autenticación
+    // Autenticación
     auth.onAuthStateChanged(async (user) => {
         if(user) {
             currentUser = user;
@@ -644,9 +614,7 @@
     document.getElementById('switchRoleBtn')?.addEventListener('click', switchRole);
     document.getElementById('configMainBtn')?.addEventListener('click', showConfig);
     document.getElementById('clearCacheBtn')?.addEventListener('click', () => { localStorage.clear(); Swal.fire('Caché limpia', 'Datos locales eliminados', 'success'); });
-    document.getElementById('exportDataBtn')?.addEventListener('click', () => { Swal.fire('Exportar', 'Función de exportación disponible en versión premium', 'info'); });
 
-    // Tabs cliente
     document.querySelectorAll('#clienteTabs .tab').forEach(tab => {
         tab.addEventListener('click', () => {
             document.querySelectorAll('#clienteTabs .tab').forEach(t => t.classList.remove('active'));
@@ -654,25 +622,14 @@
             document.querySelectorAll('#clientePanel .panel-content').forEach(p => p.classList.remove('active'));
             document.getElementById(`tab${tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)}`).classList.add('active');
             if(tab.dataset.tab === 'misPedidos') loadClientActiveOrders();
-            if(tab.dataset.tab === 'historial') loadClientHistory();
         });
     });
-    // Tabs moto
     document.querySelectorAll('#motoTabs .tab').forEach(tab => {
         tab.addEventListener('click', () => {
             document.querySelectorAll('#motoTabs .tab').forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
             document.querySelectorAll('#motomandadoPanel .panel-content').forEach(p => p.classList.remove('active'));
             document.getElementById(`motoTab${tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)}`).classList.add('active');
-        });
-    });
-    // Filtros historial
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentFilter = btn.dataset.filter;
-            loadClientHistory();
         });
     });
 
