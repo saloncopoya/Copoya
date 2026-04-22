@@ -3,80 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Didi Mandaditos - Envíos en tiempo real</title>
+    <title>Didi Mandaditos Pro - Envíos en tiempo real</title>
     <!-- PWA manifest -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00a884">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-    <!-- Google Maps API (con librería de marcadores avanzados y geocoding) -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASox7mRak5V0py29htEVWCVeipGpA0yfs&libraries=places,geometry&callback=initMapGlobal" async defer></script>
-    <!-- Leaflet (fallback / extra visual) pero usaremos Google Maps nativo -->
+    <!-- Google Maps API con librerías completas -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyASox7mRak5V0py29htEVWCVeipGpA0yfs&libraries=places,geometry,drawing&callback=initMapGlobal" async defer></script>
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: system-ui, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
         }
+
         body {
-            background: #f5f7fb;
+            background: #f0f2f5;
             height: 100vh;
             overflow: hidden;
         }
+
         /* Pantallas de autenticación */
         .auth-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            height: 100vh;
-            background: linear-gradient(145deg, #00a884 0%, #008f6e 100%);
+            min-height: 100vh;
+            background: linear-gradient(135deg, #00a884 0%, #005f45 100%);
             padding: 20px;
         }
+
         .auth-card {
             background: white;
-            border-radius: 32px;
-            padding: 32px 24px;
+            border-radius: 48px;
+            padding: 40px 32px;
             width: 100%;
-            max-width: 400px;
-            box-shadow: 0 25px 45px rgba(0,0,0,0.2);
+            max-width: 450px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
             text-align: center;
+            animation: fadeInUp 0.5s ease;
         }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .auth-card h1 {
             color: #00a884;
+            font-size: 2rem;
             margin-bottom: 8px;
         }
+
         .auth-card p {
-            color: #5e5e5e;
-            margin-bottom: 24px;
+            color: #6c757d;
+            margin-bottom: 32px;
         }
+
         .input-group {
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             text-align: left;
         }
+
         .input-group label {
             font-weight: 600;
             display: block;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             color: #1e2a32;
+            font-size: 0.9rem;
         }
-        .input-group input, .input-group select {
+
+        .input-group input,
+        .input-group select {
             width: 100%;
-            padding: 14px 16px;
-            border: 1px solid #ddd;
-            border-radius: 28px;
+            padding: 14px 18px;
+            border: 2px solid #e9ecef;
+            border-radius: 30px;
             font-size: 1rem;
-            background: #f9f9f9;
-            transition: 0.2s;
+            background: #f8f9fa;
+            transition: all 0.3s;
         }
-        .input-group input:focus {
+
+        .input-group input:focus,
+        .input-group select:focus {
             border-color: #00a884;
             outline: none;
             background: white;
+            box-shadow: 0 0 0 3px rgba(0, 168, 132, 0.1);
         }
+
         button {
             background: #00a884;
             color: white;
@@ -88,117 +118,199 @@
             width: 100%;
             cursor: pointer;
             margin-top: 12px;
-            transition: 0.2s;
+            transition: all 0.3s;
         }
+
         button:hover {
             background: #008f6e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 168, 132, 0.3);
         }
+
         .toggle-auth {
-            margin-top: 20px;
+            margin-top: 24px;
             color: #00a884;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
+            font-size: 0.9rem;
         }
-        /* Panel principal app (oculto inicialmente) */
+
+        /* Panel principal */
         .app-main {
             display: none;
             flex-direction: column;
             height: 100vh;
-            background: #f0f2f5;
+            background: #f8f9fa;
         }
+
         .map-container {
-            flex: 1;
+            flex: 2;
             position: relative;
         }
+
         #map {
             height: 100%;
             width: 100%;
         }
+
         .info-panel {
             background: white;
-            border-radius: 28px 28px 0 0;
-            padding: 18px 20px;
-            box-shadow: 0 -6px 20px rgba(0,0,0,0.08);
-            position: relative;
-            z-index: 10;
+            border-radius: 32px 32px 0 0;
+            padding: 20px 24px;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            max-height: 45%;
         }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f2f5;
+        }
+
         .user-role-badge {
-            background: #eef2f5;
+            background: linear-gradient(135deg, #00a884, #008f6e);
+            color: white;
             border-radius: 40px;
-            padding: 6px 12px;
-            display: inline-block;
-            font-size: 0.8rem;
+            padding: 6px 16px;
+            font-size: 0.85rem;
             font-weight: bold;
-            margin-bottom: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
+
+        .logout-btn {
+            background: #ff6b6b;
+            padding: 8px 20px;
+            width: auto;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #1e2a32;
+            margin: 16px 0 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .request-form {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
-            margin-top: 10px;
+            margin-top: 8px;
         }
-        .request-form input {
-            flex: 2;
-            padding: 12px 16px;
-            border-radius: 40px;
-            border: 1px solid #ccc;
-        }
-        .request-form button {
+
+        .request-form input,
+        .request-form textarea {
             flex: 1;
-            margin-top: 0;
-            background: #00a884;
-        }
-        .order-status {
-            margin-top: 15px;
+            padding: 12px 16px;
+            border-radius: 30px;
+            border: 2px solid #e9ecef;
             background: #f8f9fa;
-            padding: 12px;
-            border-radius: 20px;
             font-size: 0.9rem;
         }
-        .order-status span {
-            font-weight: bold;
-            color: #00a884;
+
+        .request-form textarea {
+            flex-basis: 100%;
+            resize: vertical;
+            font-family: inherit;
         }
-        .active-delivery {
-            border-top: 1px solid #e9ecef;
-            margin-top: 12px;
-            padding-top: 12px;
-        }
-        .delivery-list {
-            max-height: 120px;
-            overflow-y: auto;
-        }
-        .delivery-item {
-            background: #f1f3f5;
+
+        .order-status-card {
+            background: linear-gradient(135deg, #f8f9fa, #ffffff);
+            padding: 16px;
             border-radius: 24px;
-            padding: 10px 14px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            margin-top: 16px;
+            border: 1px solid #e9ecef;
         }
-        .accept-btn {
-            background: #2c7da0;
-            padding: 6px 16px;
-            width: auto;
-            border-radius: 30px;
-            font-size: 0.8rem;
-        }
-        .logout-btn {
-            background: #ff6b6b;
-            margin-top: 5px;
-            width: auto;
+
+        .status-badge {
             display: inline-block;
-            padding: 8px 20px;
+            padding: 4px 12px;
+            border-radius: 20px;
             font-size: 0.8rem;
+            font-weight: bold;
         }
-        .flex-row {
+
+        .status-pendiente {
+            background: #ffc107;
+            color: #000;
+        }
+
+        .status-aceptado {
+            background: #00a884;
+            color: white;
+        }
+
+        .status-entregado {
+            background: #28a745;
+            color: white;
+        }
+
+        .delivery-list {
+            max-height: 200px;
+            overflow-y: auto;
+            gap: 10px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
         }
-        @media (max-width: 600px) {
-            .request-form { flex-direction: column; }
+
+        .delivery-item {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 14px;
+            border: 1px solid #e9ecef;
+            transition: all 0.2s;
+        }
+
+        .delivery-item:hover {
+            transform: translateX(5px);
+            border-color: #00a884;
+        }
+
+        .accept-btn {
+            background: #00a884;
+            padding: 8px 20px;
+            width: auto;
+            font-size: 0.85rem;
+            margin-top: 8px;
+        }
+
+        .rating-stars {
+            color: #ffc107;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .history-item {
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        i {
+            margin-right: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .info-panel {
+                max-height: 50%;
+                padding: 16px;
+            }
+            .request-form {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -207,28 +319,29 @@
 <!-- Pantalla de autenticación -->
 <div id="authScreen" class="auth-container">
     <div class="auth-card">
-        <h1>📦 Didi Mandaditos</h1>
-        <p>Envíos rápidos · Rastreo en vivo</p>
+        <i class="fas fa-motorcycle" style="font-size: 50px; color: #00a884; margin-bottom: 16px;"></i>
+        <h1>Didi Mandaditos</h1>
+        <p>Envíos rápidos · Rastreo en vivo · Seguridad total</p>
         <div id="authTabs">
             <div class="input-group">
-                <label>📧 Correo</label>
+                <label><i class="fas fa-envelope"></i> Correo electrónico</label>
                 <input type="email" id="emailInput" placeholder="tu@email.com">
             </div>
             <div class="input-group">
-                <label>🔒 Contraseña</label>
+                <label><i class="fas fa-lock"></i> Contraseña</label>
                 <input type="password" id="passwordInput" placeholder="******">
             </div>
             <div class="input-group">
-                <label>👤 Rol</label>
+                <label><i class="fas fa-user-tag"></i> Selecciona tu rol</label>
                 <select id="roleSelect">
-                    <option value="cliente">Cliente (solicito mandados)</option>
-                    <option value="motomandado">Motomandado (repartidor)</option>
+                    <option value="cliente">👤 Cliente - Solicitar mandados</option>
+                    <option value="motomandado">🛵 Motomandado - Repartidor profesional</option>
                 </select>
             </div>
-            <button id="loginBtn">Iniciar sesión</button>
-            <div class="toggle-auth" id="toggleRegisterBtn">¿No tienes cuenta? Regístrate</div>
+            <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> Ingresar / Registrarse</button>
+            <div class="toggle-auth" id="toggleRegisterBtn">¿Nuevo? Crea tu cuenta gratuita</div>
         </div>
-        <div id="authMessage" style="margin-top: 16px; color: #d9534f; font-size: 0.8rem;"></div>
+        <div id="authMessage" style="margin-top: 16px; color: #dc3545; font-size: 0.8rem;"></div>
     </div>
 </div>
 
@@ -238,28 +351,38 @@
         <div id="map"></div>
     </div>
     <div class="info-panel">
-        <div class="flex-row">
-            <div class="user-role-badge" id="roleBadge">Cargando...</div>
-            <button id="logoutMainBtn" class="logout-btn" style="width: auto;">Salir</button>
+        <div class="user-header">
+            <div class="user-role-badge" id="roleBadge"><i class="fas fa-user"></i> Cargando...</div>
+            <button id="logoutMainBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Salir</button>
         </div>
+
+        <!-- Panel Cliente -->
         <div id="clientePanel">
-            <!-- contenido dinámico para cliente -->
+            <div class="section-title"><i class="fas fa-shopping-cart"></i> Solicitar nuevo mandado</div>
             <div class="request-form">
-                <input type="text" id="destinoInput" placeholder="📍 Destino (dirección o lugar)">
-                <input type="text" id="descripcionMandado" placeholder="📝 Descripción del mandado">
-                <button id="solicitarMandadoBtn">📲 Solicitar Mandado</button>
+                <input type="text" id="origenInput" placeholder="📍 Origen (dirección actual)" value="Mi ubicación">
+                <input type="text" id="destinoInput" placeholder="🎯 Destino (dirección exacta)">
+                <textarea id="descripcionMandado" rows="2" placeholder="📝 Descripción del paquete / instrucciones especiales"></textarea>
+                <input type="text" id="precioEstimado" placeholder="💰 Pago sugerido (ej. 50)">
+                <button id="solicitarMandadoBtn"><i class="fas fa-paper-plane"></i> Solicitar Mandado</button>
             </div>
-            <div class="order-status" id="orderStatusPanel">
-                <strong>Estado del pedido:</strong> <span id="estadoTexto">Sin pedido activo</span>
-                <div id="driverLocationInfo"></div>
+            <div class="order-status-card" id="orderStatusPanel">
+                <div><i class="fas fa-clipboard-list"></i> <strong>Estado del pedido:</strong> <span id="estadoTexto" class="status-badge status-pendiente">Sin pedido activo</span></div>
+                <div id="driverLocationInfo" style="margin-top: 10px;"></div>
+                <div id="distanceInfo" style="margin-top: 5px; font-size: 0.8rem;"></div>
             </div>
+            <div class="section-title"><i class="fas fa-history"></i> Historial de mandados</div>
+            <div id="historialCliente" style="max-height: 150px; overflow-y: auto;"></div>
         </div>
+
+        <!-- Panel Motomandado -->
         <div id="motomandadoPanel" style="display: none;">
-            <div class="active-delivery">
-                <strong>📋 Mandados disponibles cerca:</strong>
-                <div id="availableOrdersList" class="delivery-list">Cargando pedidos...</div>
-            </div>
-            <div id="myAssignedDelivery" style="margin-top: 12px;"></div>
+            <div class="section-title"><i class="fas fa-list-ul"></i> Mandados disponibles cerca</div>
+            <div id="availableOrdersList" class="delivery-list">Cargando pedidos...</div>
+            <div class="section-title"><i class="fas fa-tasks"></i> Mi mandado activo</div>
+            <div id="myAssignedDelivery" class="order-status-card"></div>
+            <div class="section-title"><i class="fas fa-chart-line"></i> Mis estadísticas</div>
+            <div id="statsMoto" style="background: #f8f9fa; border-radius: 20px; padding: 12px;"></div>
         </div>
     </div>
 </div>
@@ -282,360 +405,339 @@
 
     // Variables globales
     let currentUser = null;
-    let currentRole = null; // 'cliente' o 'motomandado'
+    let currentRole = null;
     let map = null;
-    let userMarker = null;       // marcador del usuario actual (cliente o moto)
-    let activeOrderId = null;    // para cliente: pedido activo
-    let driverMarker = null;      // marcador del repartidor (para cliente)
-    let currentWatchDriver = null;
-    let assignedOrderForMoto = null; // para motomandado: pedido asignado a él
-    let motoWatchClientOrder = null;
-    let geoWatchId = null;
+    let userMarker = null;
+    let driverMarker = null;
+    let clientMarkerForMoto = null;
+    let activeOrderId = null;
+    let assignedOrderId = null;
+    let watchOrderListener = null;
+    let currentPolyline = null;
+    let geocoder = null;
+    let watchPositionId = null;
 
-    // Inicialización del mapa cuando la API esté lista
-    let mapInitialized = false;
+    // Inicializar mapa global
     function initMapGlobal() {
-        if(mapInitialized) return;
-        const mapDiv = document.getElementById('map');
-        if(mapDiv) {
-            map = new google.maps.Map(mapDiv, {
-                center: { lat: 19.4326, lng: -99.1332 }, // Ciudad de México
-                zoom: 12,
-                zoomControl: true,
-                mapTypeControl: false,
-                fullscreenControl: true
-            });
-            mapInitialized = true;
-        }
+        if (map) return;
+        const center = { lat: 19.4326, lng: -99.1332 };
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: center,
+            zoom: 13,
+            zoomControl: true,
+            mapTypeControl: false,
+            fullscreenControl: true,
+            streetViewControl: false,
+            styles: [{ featureType: "poi", elementType: "labels", stylers: [{ visibility: "off" }] }]
+        });
+        geocoder = new google.maps.Geocoder();
     }
     window.initMapGlobal = initMapGlobal;
 
-    // Helper: obtener ubicación actual del dispositivo
+    // Obtener ubicación actual
     function getCurrentPosition() {
         return new Promise((resolve, reject) => {
-            if(!navigator.geolocation) reject("Geolocation no soportada");
+            if (!navigator.geolocation) reject("Geolocalización no soportada");
             navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 });
         });
     }
 
-    // Actualizar ubicación en Firebase según rol
-    async function updateUserLocation() {
-        if(!currentUser) return;
+    // Actualizar ubicación en Firebase y mapa
+    async function updateUserLocationAndMap() {
+        if (!currentUser) return;
         try {
-            const position = await getCurrentPosition();
-            const lat = position.coords.latitude;
-            const lng = position.coords.longitude;
-            const locationRef = db.ref(`users/${currentUser.uid}/location`);
-            await locationRef.set({ lat, lng, timestamp: Date.now() });
-            // mover marcador en mapa si existe
-            if(map && userMarker) {
-                userMarker.setPosition({ lat, lng });
+            const pos = await getCurrentPosition();
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            await db.ref(`users/${currentUser.uid}/location`).set({ lat, lng, timestamp: Date.now() });
+            if (map) {
+                if (!userMarker) {
+                    const iconUrl = currentRole === 'cliente' ? 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png' : 'http://maps.google.com/mapfiles/ms/icons/red-dot.png';
+                    userMarker = new google.maps.Marker({ position: { lat, lng }, map: map, title: currentRole === 'cliente' ? 'Mi ubicación' : 'Mi moto', icon: iconUrl });
+                } else {
+                    userMarker.setPosition({ lat, lng });
+                }
                 map.setCenter({ lat, lng });
-            } else if(map && !userMarker) {
-                userMarker = new google.maps.Marker({
-                    position: { lat, lng },
-                    map: map,
-                    title: currentRole === 'cliente' ? 'Mi ubicación (cliente)' : 'Mi ubicación (repartidor)',
-                    icon: currentRole === 'cliente' ? 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png' : 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-                });
-                map.setCenter({ lat, lng });
-            } else if(userMarker) userMarker.setPosition({ lat, lng });
-            // Si el rol es motomandado y tiene pedido asignado, actualizar la ubicación en el pedido
-            if(currentRole === 'motomandado' && assignedOrderForMoto) {
-                await db.ref(`orders/${assignedOrderForMoto}/driverLocation`).set({ lat, lng, updatedAt: Date.now() });
             }
-        } catch(err) { console.warn("Error ubicación:", err); }
+            if (currentRole === 'motomandado' && assignedOrderId) {
+                await db.ref(`orders/${assignedOrderId}/driverLocation`).set({ lat, lng, updatedAt: Date.now() });
+            }
+        } catch (error) {
+            console.warn("Error de ubicación:", error);
+        }
     }
 
-    // Iniciar seguimiento periódico
-    function startLocationTracking() {
-        if(geoWatchId) navigator.geolocation.clearWatch(geoWatchId);
-        geoWatchId = navigator.geolocation.watchPosition(async (pos) => {
-            if(!currentUser) return;
+    function startRealTimeTracking() {
+        if (watchPositionId) navigator.geolocation.clearWatch(watchPositionId);
+        watchPositionId = navigator.geolocation.watchPosition(async (pos) => {
+            if (!currentUser) return;
             const lat = pos.coords.latitude, lng = pos.coords.longitude;
             await db.ref(`users/${currentUser.uid}/location`).set({ lat, lng, timestamp: Date.now() });
-            if(map && userMarker) userMarker.setPosition({ lat, lng });
-            else if(map && !userMarker) {
-                userMarker = new google.maps.Marker({ position: { lat, lng }, map: map, title: currentRole });
-            }
-            if(currentRole === 'motomandado' && assignedOrderForMoto) {
-                await db.ref(`orders/${assignedOrderForMoto}/driverLocation`).set({ lat, lng });
+            if (userMarker) userMarker.setPosition({ lat, lng });
+            if (currentRole === 'motomandado' && assignedOrderId) {
+                await db.ref(`orders/${assignedOrderId}/driverLocation`).set({ lat, lng });
             }
         }, (err) => console.warn(err), { enableHighAccuracy: true, maximumAge: 3000, timeout: 8000 });
     }
 
-    // Cliente: escuchar cambios en su pedido activo (ubicación repartidor, estado)
-    function listenToClientOrder(orderId) {
-        if(currentWatchDriver) currentWatchDriver();
+    // Cliente: escuchar pedido activo
+    function listenClientOrder(orderId) {
+        if (watchOrderListener) watchOrderListener();
         const orderRef = db.ref(`orders/${orderId}`);
-        const handler = orderRef.on('value', (snap) => {
+        watchOrderListener = orderRef.on('value', (snap) => {
             const order = snap.val();
-            if(!order) return;
-            document.getElementById('estadoTexto').innerText = order.status || 'pendiente';
-            if(order.status === 'aceptado' && order.driverLocation) {
-                const driverLoc = order.driverLocation;
-                if(driverMarker) driverMarker.setMap(null);
+            if (!order) return;
+            const estadoSpan = document.getElementById('estadoTexto');
+            estadoSpan.innerText = order.status === 'pendiente' ? '⏳ Buscando repartidor...' : order.status === 'aceptado' ? '🛵 En camino' : '✅ Entregado';
+            estadoSpan.className = `status-badge status-${order.status}`;
+            if (order.status === 'aceptado' && order.driverLocation) {
+                if (driverMarker) driverMarker.setMap(null);
                 driverMarker = new google.maps.Marker({
-                    position: { lat: driverLoc.lat, lng: driverLoc.lng },
+                    position: { lat: order.driverLocation.lat, lng: order.driverLocation.lng },
                     map: map,
                     icon: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
-                    title: 'Motomandado en camino'
+                    title: 'Motomandado en ruta'
                 });
-                document.getElementById('driverLocationInfo').innerHTML = `🛵 Repartidor en movimiento (aprox)`;
-                // trazar ruta opcional? se puede agregar polyline pero por simplicidad mostramos marcador
-            } else if(order.status !== 'aceptado') {
-                if(driverMarker) driverMarker.setMap(null);
-                document.getElementById('driverLocationInfo').innerHTML = '';
-            }
-            if(order.status === 'entregado') {
-                document.getElementById('estadoTexto').innerText = '✅ Entregado';
-                if(driverMarker) driverMarker.setMap(null);
+                document.getElementById('driverLocationInfo').innerHTML = `<i class="fas fa-motorcycle"></i> Repartidor en movimiento - Actualización en tiempo real`;
+                if (userMarker && order.driverLocation) {
+                    const distance = google.maps.geometry.spherical.computeDistanceBetween(
+                        new google.maps.LatLng(userMarker.getPosition().lat(), userMarker.getPosition().lng()),
+                        new google.maps.LatLng(order.driverLocation.lat, order.driverLocation.lng)
+                    ) / 1000;
+                    document.getElementById('distanceInfo').innerHTML = `📏 Distancia aproximada: ${distance.toFixed(1)} km`;
+                }
+            } else if (order.status === 'entregado') {
+                if (driverMarker) driverMarker.setMap(null);
                 activeOrderId = null;
+                cargarHistorialCliente();
+                orderRef.off();
             }
         });
-        currentWatchDriver = () => orderRef.off('value', handler);
     }
 
-    // Cliente: solicitar mandado
+    // Solicitar mandado
     async function solicitarMandado() {
-        if(!currentUser || currentRole !== 'cliente') return;
+        if (!currentUser || currentRole !== 'cliente') return;
         const destino = document.getElementById('destinoInput').value.trim();
         const descripcion = document.getElementById('descripcionMandado').value.trim();
-        if(!destino) { alert("Indica destino"); return; }
-        // geocodificar destino para obtener coordenadas (aproximado)
-        const geocoder = new google.maps.Geocoder();
+        const pago = document.getElementById('precioEstimado').value.trim();
+        if (!destino) { alert("Ingresa un destino válido"); return; }
+        let origenCoords = null;
+        try {
+            const pos = await getCurrentPosition();
+            origenCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+        } catch (e) { origenCoords = { lat: 19.4326, lng: -99.1332 }; }
         geocoder.geocode({ address: destino }, async (results, status) => {
-            if(status === 'OK' && results[0]) {
-                const destLat = results[0].geometry.location.lat();
-                const destLng = results[0].geometry.location.lng();
-                // obtener ubicación actual del cliente
-                let clientLoc = { lat: 19.4326, lng: -99.1332 };
-                try {
-                    const pos = await getCurrentPosition();
-                    clientLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-                } catch(e) {}
+            if (status === 'OK' && results[0]) {
+                const destCoords = { lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng() };
                 const newOrderRef = db.ref('orders').push();
                 const orderData = {
                     clientId: currentUser.uid,
-                    clientName: currentUser.email,
+                    clientEmail: currentUser.email,
                     destino: destino,
-                    destinoCoords: { lat: destLat, lng: destLng },
-                    origenCoords: clientLoc,
+                    destinoCoords: destCoords,
+                    origenCoords: origenCoords,
                     descripcion: descripcion,
+                    pago: pago || "A convenir",
                     status: 'pendiente',
                     timestamp: Date.now(),
                     driverId: null
                 };
                 await newOrderRef.set(orderData);
                 activeOrderId = newOrderRef.key;
-                document.getElementById('estadoTexto').innerText = 'Buscando motomandado...';
+                document.getElementById('estadoTexto').innerText = '⏳ Buscando repartidor...';
                 document.getElementById('destinoInput').value = '';
                 document.getElementById('descripcionMandado').value = '';
-                // Escuchar asignación
-                const orderWatcher = db.ref(`orders/${activeOrderId}`).on('value', (snap) => {
-                    const ord = snap.val();
-                    if(ord && ord.driverId && ord.status === 'aceptado') {
-                        // pedido aceptado, comenzar seguimiento
-                        listenToClientOrder(activeOrderId);
-                        orderWatcher && db.ref(`orders/${activeOrderId}`).off('value', orderWatcher);
+                listenClientOrder(activeOrderId);
+                // Esperar asignación
+                const waitAssign = db.ref(`orders/${activeOrderId}`).on('child_changed', (snap) => {
+                    if (snap.key === 'driverId' && snap.val()) {
+                        db.ref(`orders/${activeOrderId}`).off('child_changed', waitAssign);
                     }
                 });
             } else {
-                alert("No se pudo ubicar el destino. Intenta con una dirección más precisa.");
+                alert("No se pudo ubicar el destino, intenta con más detalles.");
             }
         });
     }
 
-    // Mostrar pedidos disponibles para motomandado
+    // Cargar pedidos disponibles para moto
     function loadAvailableOrders() {
-        if(!currentUser || currentRole !== 'motomandado') return;
+        if (!currentUser || currentRole !== 'motomandado') return;
         const ordersRef = db.ref('orders');
         ordersRef.off('value');
         ordersRef.on('value', (snapshot) => {
             const orders = snapshot.val();
             const container = document.getElementById('availableOrdersList');
-            if(!container) return;
-            if(!orders) { container.innerHTML = "No hay pedidos disponibles"; return; }
-            let pendingHtml = '';
-            for(let id in orders) {
+            if (!container) return;
+            if (!orders) { container.innerHTML = "<i class='fas fa-inbox'></i> No hay pedidos"; return; }
+            let html = '';
+            for (let id in orders) {
                 const order = orders[id];
-                if(order.status === 'pendiente' && !order.driverId) {
-                    pendingHtml += `
+                if (order.status === 'pendiente' && !order.driverId) {
+                    html += `
                         <div class="delivery-item">
-                            <div><strong>${order.destino.substring(0,25)}</strong><br>${order.descripcion || 'Sin descripción'}</div>
-                            <button class="accept-btn" data-orderid="${id}">Aceptar 🛵</button>
+                            <div><i class="fas fa-location-dot"></i> <strong>${order.destino.substring(0, 35)}</strong><br>
+                            <small>📦 ${order.descripcion || 'Sin descripción'} | 💰 ${order.pago || 'Pactar'}</small></div>
+                            <button class="accept-btn" data-orderid="${id}"><i class="fas fa-check-circle"></i> Aceptar mandado</button>
                         </div>
                     `;
                 }
             }
-            container.innerHTML = pendingHtml || "📭 No hay mandados disponibles";
+            container.innerHTML = html || "<i class='fas fa-clock'></i> No hay mandados disponibles";
             document.querySelectorAll('.accept-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const orderId = btn.getAttribute('data-orderid');
-                    acceptOrder(orderId);
-                });
+                btn.addEventListener('click', (e) => acceptOrder(btn.getAttribute('data-orderid')));
             });
         });
     }
 
-    // Motomandado acepta pedido
+    // Aceptar pedido
     async function acceptOrder(orderId) {
-        if(!currentUser || currentRole !== 'motomandado') return;
+        if (!currentUser || currentRole !== 'motomandado') return;
         const orderRef = db.ref(`orders/${orderId}`);
         const snap = await orderRef.once('value');
         const order = snap.val();
-        if(!order || order.status !== 'pendiente') { alert("Pedido ya no disponible"); return; }
-        // Asignar a este repartidor
+        if (!order || order.status !== 'pendiente') { alert("Pedido ya no disponible"); return; }
         await orderRef.update({ driverId: currentUser.uid, status: 'aceptado', acceptedAt: Date.now() });
-        assignedOrderForMoto = orderId;
-        document.getElementById('myAssignedDelivery').innerHTML = `<strong>✅ Mandado asignado:</strong> Destino: ${order.destino} <br> 🧾 ${order.descripcion || ''}`;
-        // Escuchar cambios en el pedido para saber si el cliente cancela o finaliza
-        const assignedRef = db.ref(`orders/${orderId}`);
-        assignedRef.on('value', (snap2) => {
-            const updOrder = snap2.val();
-            if(updOrder && updOrder.status === 'entregado') {
-                document.getElementById('myAssignedDelivery').innerHTML += `<br>🎉 Entregado - Completado`;
-                assignedOrderForMoto = null;
-                assignedRef.off();
-            } else if(!updOrder) assignedOrderForMoto = null;
+        assignedOrderId = orderId;
+        document.getElementById('myAssignedDelivery').innerHTML = `
+            <div><i class="fas fa-check-circle" style="color:#00a884"></i> <strong>Mandado activo</strong><br>
+            Destino: ${order.destino}<br>🧾 ${order.descripcion || ''}<br>💰 ${order.pago || 'A convenir'}</div>
+            <button id="completarPedidoBtn" class="accept-btn" style="background:#28a745; margin-top:10px"><i class="fas fa-flag-checkered"></i> Marcar como entregado</button>
+        `;
+        document.getElementById('completarPedidoBtn')?.addEventListener('click', async () => {
+            await db.ref(`orders/${assignedOrderId}`).update({ status: 'entregado', completedAt: Date.now() });
+            // Actualizar estadísticas del moto
+            const statsRef = db.ref(`users/${currentUser.uid}/stats`);
+            const currentStats = (await statsRef.once('value')).val() || { deliveries: 0, earnings: 0 };
+            await statsRef.set({ deliveries: currentStats.deliveries + 1, earnings: (currentStats.earnings + parseInt(order.pago) || 0) });
+            assignedOrderId = null;
+            document.getElementById('myAssignedDelivery').innerHTML = "<i class='fas fa-trophy'></i> ¡Mandado completado! Recibirás tu pago.";
+            if (clientMarkerForMoto) clientMarkerForMoto.setMap(null);
+            loadAvailableOrders();
+            cargarEstadisticasMoto();
         });
-        // Obtener ubicación del cliente para trazarlo en mapa
-        const clientId = order.clientId;
-        const clientLocRef = db.ref(`users/${clientId}/location`);
+        // Seguir ubicación del cliente
+        const clientLocRef = db.ref(`users/${order.clientId}/location`);
         clientLocRef.on('value', (locSnap) => {
-            if(locSnap.exists() && map) {
+            if (locSnap.exists() && map) {
                 const loc = locSnap.val();
-                if(!window.clientMarkerMoto) {
-                    window.clientMarkerMoto = new google.maps.Marker({
+                if (!clientMarkerForMoto) {
+                    clientMarkerForMoto = new google.maps.Marker({
                         position: { lat: loc.lat, lng: loc.lng },
                         map: map,
                         icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-                        title: 'Ubicación del cliente'
+                        title: 'Cliente'
                     });
-                } else {
-                    window.clientMarkerMoto.setPosition({ lat: loc.lat, lng: loc.lng });
-                }
+                } else clientMarkerForMoto.setPosition({ lat: loc.lat, lng: loc.lng });
             }
         });
-        motoWatchClientOrder = () => clientLocRef.off();
     }
 
-    // Cerrar sesión
-    async function logout() {
-        if(geoWatchId) navigator.geolocation.clearWatch(geoWatchId);
-        if(currentUser && currentUser.uid) {
-            await db.ref(`users/${currentUser.uid}/location`).remove();
-        }
-        await auth.signOut();
-        window.location.reload();
+    // Historial cliente
+    async function cargarHistorialCliente() {
+        if (!currentUser || currentRole !== 'cliente') return;
+        const ordersSnap = await db.ref('orders').orderByChild('clientId').equalTo(currentUser.uid).once('value');
+        const historyDiv = document.getElementById('historialCliente');
+        let html = '';
+        ordersSnap.forEach(child => {
+            const o = child.val();
+            if (o.status === 'entregado') {
+                html += `<div class="history-item"><i class="fas fa-check-circle" style="color:#28a745"></i> ${o.destino} - ${new Date(o.timestamp).toLocaleString()}<br>💰 ${o.pago}</div>`;
+            }
+        });
+        historyDiv.innerHTML = html || "<i class='fas fa-history'></i> No hay entregas previas";
     }
 
-    // UI dinámica según rol
+    // Estadísticas moto
+    async function cargarEstadisticasMoto() {
+        if (!currentUser || currentRole !== 'motomandado') return;
+        const stats = (await db.ref(`users/${currentUser.uid}/stats`).once('value')).val() || { deliveries: 0, earnings: 0 };
+        document.getElementById('statsMoto').innerHTML = `<i class="fas fa-truck"></i> Entregas: ${stats.deliveries} | 💰 Ganancias: $${stats.earnings} MXN`;
+    }
+
+    // Aplicar UI por rol
     function applyRoleUI(role) {
-        const clientePanel = document.getElementById('clientePanel');
-        const motoPanel = document.getElementById('motomandadoPanel');
-        if(role === 'cliente') {
-            clientePanel.style.display = 'block';
-            motoPanel.style.display = 'none';
-            document.getElementById('roleBadge').innerText = '👤 Cliente - Solicita mandados';
-            // si hay orden activa escuchar
-            if(activeOrderId) listenToClientOrder(activeOrderId);
+        const clienteDiv = document.getElementById('clientePanel');
+        const motoDiv = document.getElementById('motomandadoPanel');
+        if (role === 'cliente') {
+            clienteDiv.style.display = 'block';
+            motoDiv.style.display = 'none';
+            document.getElementById('roleBadge').innerHTML = '<i class="fas fa-user"></i> Cliente Premium';
+            cargarHistorialCliente();
         } else {
-            clientePanel.style.display = 'none';
-            motoPanel.style.display = 'block';
-            document.getElementById('roleBadge').innerText = '🛵 Motomandado - Repartidor';
+            clienteDiv.style.display = 'none';
+            motoDiv.style.display = 'block';
+            document.getElementById('roleBadge').innerHTML = '<i class="fas fa-motorcycle"></i> Motomandado Pro';
             loadAvailableOrders();
+            cargarEstadisticasMoto();
         }
     }
 
-    // Inicializar después del login
-    async function onAuthStateChanged(user) {
-        if(user) {
+    // Logout
+    async function logout() {
+        if (watchPositionId) navigator.geolocation.clearWatch(watchPositionId);
+        if (currentUser) await db.ref(`users/${currentUser.uid}/location`).remove();
+        await auth.signOut();
+        location.reload();
+    }
+
+    // Autenticación
+    auth.onAuthStateChanged(async (user) => {
+        if (user) {
             currentUser = user;
-            const roleSnapshot = await db.ref(`users/${user.uid}/role`).once('value');
-            currentRole = roleSnapshot.val() || (document.getElementById('roleSelect').value);
-            if(!roleSnapshot.exists()) await db.ref(`users/${user.uid}/role`).set(currentRole);
-            // guardar datos en firebase
+            const roleSnap = await db.ref(`users/${user.uid}/role`).once('value');
+            currentRole = roleSnap.val() || document.getElementById('roleSelect').value;
+            if (!roleSnap.exists()) await db.ref(`users/${user.uid}/role`).set(currentRole);
             await db.ref(`users/${user.uid}`).update({ email: user.email, role: currentRole });
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('appMain').style.display = 'flex';
-            // iniciar mapa si no está listo
-            if(!mapInitialized && window.google && google.maps) initMapGlobal();
-            else if(!mapInitialized) setTimeout(() => initMapGlobal(), 500);
-            startLocationTracking();
+            if (!map && window.google) initMapGlobal();
+            else setTimeout(() => initMapGlobal(), 500);
+            startRealTimeTracking();
             applyRoleUI(currentRole);
-            // Si es cliente, buscar si tiene pedidos activos previos (status pendiente o aceptado)
-            const ordersRef = db.ref('orders');
-            const snapshotOrders = await ordersRef.orderByChild('clientId').equalTo(user.uid).once('value');
-            let activeFound = false;
-            snapshotOrders.forEach((childSnap) => {
-                const ord = childSnap.val();
-                if(ord.status === 'pendiente' || ord.status === 'aceptado') {
-                    activeOrderId = childSnap.key;
-                    activeFound = true;
-                    listenToClientOrder(activeOrderId);
-                    document.getElementById('estadoTexto').innerText = ord.status === 'pendiente' ? 'Pedido pendiente...' : 'En camino';
+            // Recuperar pedido activo si cliente tiene uno pendiente
+            const ordersActive = await db.ref('orders').orderByChild('clientId').equalTo(user.uid).once('value');
+            ordersActive.forEach(child => {
+                const ord = child.val();
+                if (ord.status === 'pendiente' || ord.status === 'aceptado') {
+                    activeOrderId = child.key;
+                    listenClientOrder(activeOrderId);
+                    document.getElementById('estadoTexto').innerText = ord.status === 'pendiente' ? '⏳ Pendiente' : '🛵 En camino';
                 }
             });
-            if(!activeFound) activeOrderId = null;
-            // Para motomandado: revisar si ya tiene un pedido asignado
-            if(currentRole === 'motomandado') {
-                const assignedQuery = await ordersRef.orderByChild('driverId').equalTo(user.uid).once('value');
-                assignedQuery.forEach((snap) => {
-                    const ord = snap.val();
-                    if(ord.status === 'aceptado') {
-                        assignedOrderForMoto = snap.key;
-                        document.getElementById('myAssignedDelivery').innerHTML = `<strong>📦 Mandado activo:</strong> ${ord.destino}`;
-                        // escuchar cliente ubicación
-                        const clientId = ord.clientId;
-                        const locRef = db.ref(`users/${clientId}/location`);
-                        locRef.on('value', (locSnap) => {
-                            if(locSnap.exists() && map) {
-                                if(!window.clientMarkerMoto) window.clientMarkerMoto = new google.maps.Marker({ map, position: { lat: locSnap.val().lat, lng: locSnap.val().lng }, icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png' });
-                                else window.clientMarkerMoto.setPosition({ lat: locSnap.val().lat, lng: locSnap.val().lng });
-                            }
-                        });
-                    }
+            if (currentRole === 'motomandado') {
+                const assigned = await db.ref('orders').orderByChild('driverId').equalTo(user.uid).once('value');
+                assigned.forEach(child => {
+                    if (child.val().status === 'aceptado') assignedOrderId = child.key;
                 });
             }
         } else {
-            // pantalla login
             document.getElementById('authScreen').style.display = 'flex';
             document.getElementById('appMain').style.display = 'none';
         }
-    }
+    });
 
-    // Registro / Login
+    // Eventos UI
     document.getElementById('loginBtn').addEventListener('click', async () => {
         const email = document.getElementById('emailInput').value;
         const pwd = document.getElementById('passwordInput').value;
         const role = document.getElementById('roleSelect').value;
-        const msgDiv = document.getElementById('authMessage');
-        if(!email || !pwd) { msgDiv.innerText = "Completa correo y contraseña"; return; }
+        if (!email || !pwd) { document.getElementById('authMessage').innerText = "Completa campos"; return; }
         try {
             await auth.signInWithEmailAndPassword(email, pwd);
-            // después login se actualizará rol en db
-            const user = auth.currentUser;
-            await db.ref(`users/${user.uid}/role`).set(role);
-        } catch(err) {
-            if(err.code === 'auth/user-not-found') {
-                try {
-                    await auth.createUserWithEmailAndPassword(email, pwd);
-                    const user = auth.currentUser;
-                    await db.ref(`users/${user.uid}/role`).set(role);
-                } catch(regErr) { msgDiv.innerText = regErr.message; }
-            } else { msgDiv.innerText = err.message; }
+            await db.ref(`users/${auth.currentUser.uid}/role`).set(role);
+        } catch (err) {
+            if (err.code === 'auth/user-not-found') {
+                await auth.createUserWithEmailAndPassword(email, pwd);
+                await db.ref(`users/${auth.currentUser.uid}/role`).set(role);
+            } else { document.getElementById('authMessage').innerText = err.message; }
         }
     });
-    document.getElementById('toggleRegisterBtn').addEventListener('click', () => {
-        document.getElementById('loginBtn').innerText = 'Registrarse / Iniciar sesión';
-    });
-    document.getElementById('logoutMainBtn').addEventListener('click', logout);
     document.getElementById('solicitarMandadoBtn')?.addEventListener('click', solicitarMandado);
-    auth.onAuthStateChanged(onAuthStateChanged);
-    // Inicializar si el mapa está cargado antes
-    if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { if(window.google) initMapGlobal(); });
-    else { if(window.google) initMapGlobal(); }
+    document.getElementById('logoutMainBtn')?.addEventListener('click', logout);
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => { if (window.google) initMapGlobal(); });
+    else { if (window.google) initMapGlobal(); }
 </script>
 </body>
 </html>
