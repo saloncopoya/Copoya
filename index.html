@@ -3,17 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Didi Mandaditos Pro - Envíos en tiempo real</title>
+    <title>Didi Mandaditos Pro - Plataforma de Envíos</title>
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#00a884">
     
-    <!-- Leaflet CSS y JS con caché mejorado -->
+    <!-- Leaflet CSS y JS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
     <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
     
-    <!-- Firebase SDKs -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -29,63 +30,43 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', system-ui, sans-serif;
         }
-
         body {
             background: #f0f2f5;
             height: 100vh;
             overflow: hidden;
         }
-
-        /* Pantalla de autenticación */
         .auth-container {
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             background: linear-gradient(135deg, #00a884 0%, #005f45 100%);
             padding: 20px;
-            overflow-y: auto;
         }
-
         .auth-card {
             background: white;
             border-radius: 48px;
             padding: 40px 32px;
             width: 100%;
             max-width: 450px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
             text-align: center;
         }
-
         .auth-card h1 {
             color: #00a884;
             font-size: 2rem;
-            margin-bottom: 8px;
         }
-
         .input-group {
             margin-bottom: 20px;
             text-align: left;
         }
-
-        .input-group label {
-            font-weight: 600;
-            display: block;
-            margin-bottom: 8px;
-            color: #1e2a32;
-        }
-
-        .input-group input,
-        .input-group select {
+        .input-group input, .input-group select {
             width: 100%;
             padding: 14px 18px;
             border: 2px solid #e9ecef;
             border-radius: 30px;
             font-size: 1rem;
-            background: #f8f9fa;
         }
-
         button {
             background: #00a884;
             color: white;
@@ -93,62 +74,40 @@
             padding: 14px;
             border-radius: 40px;
             font-weight: bold;
-            font-size: 1rem;
             width: 100%;
             cursor: pointer;
-            margin-top: 12px;
             transition: all 0.3s;
         }
-
-        button:hover {
-            background: #008f6e;
-            transform: translateY(-2px);
-        }
-
-        .toggle-auth {
-            margin-top: 24px;
-            color: #00a884;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        /* Panel principal */
+        button:hover { background: #008f6e; transform: translateY(-2px); }
         .app-main {
             display: none;
             flex-direction: column;
             height: 100vh;
         }
-
         .map-container {
             flex: 2;
             position: relative;
         }
-
         #map {
             height: 100%;
             width: 100%;
         }
-
         .info-panel {
             background: white;
             border-radius: 32px 32px 0 0;
-            padding: 20px 24px;
-            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.1);
+            padding: 16px 20px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
             overflow-y: auto;
-            max-height: 52%;
+            max-height: 50%;
         }
-
         .user-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid #f0f2f5;
+            margin-bottom: 12px;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
         }
-
         .user-role-badge {
             background: linear-gradient(135deg, #00a884, #008f6e);
             color: white;
@@ -156,44 +115,32 @@
             padding: 6px 16px;
             font-size: 0.85rem;
             font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
-
-        .role-switch-btn {
-            background: #6c757d;
+        .role-switch-btn, .logout-btn, .config-btn {
             padding: 6px 16px;
             width: auto;
             border-radius: 30px;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             margin: 0;
         }
-
-        .logout-btn {
-            background: #ff6b6b;
-            padding: 6px 16px;
-            width: auto;
-            border-radius: 30px;
-            font-size: 0.8rem;
-            margin: 0;
-        }
-
+        .role-switch-btn { background: #6c757d; }
+        .logout-btn { background: #ff6b6b; }
+        .config-btn { background: #17a2b8; }
         .section-title {
             font-size: 1rem;
             font-weight: bold;
-            color: #1e2a32;
             margin: 12px 0 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-
         .selected-location {
             background: #e8f5e9;
-            padding: 10px;
+            padding: 8px;
             border-radius: 12px;
             margin: 8px 0;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
-
         .delivery-list {
             max-height: 180px;
             overflow-y: auto;
@@ -201,166 +148,165 @@
             display: flex;
             flex-direction: column;
         }
-
-        .delivery-item {
+        .delivery-item, .order-item {
             background: #f8f9fa;
             border-radius: 16px;
             padding: 10px;
             border: 1px solid #e9ecef;
         }
-
-        .accept-btn, .cancel-btn {
-            padding: 6px 16px;
+        .accept-btn, .cancel-order-btn, .complete-btn {
+            padding: 5px 12px;
             width: auto;
-            font-size: 0.75rem;
-            margin-top: 6px;
+            font-size: 0.7rem;
+            margin-top: 5px;
             margin-right: 5px;
         }
-
-        .cancel-btn {
-            background: #dc3545;
-        }
-
-        .order-status-card {
-            background: linear-gradient(135deg, #f8f9fa, #ffffff);
-            padding: 12px;
-            border-radius: 20px;
-            margin-top: 10px;
-            border: 1px solid #e9ecef;
-        }
-
+        .cancel-order-btn { background: #dc3545; }
+        .complete-btn { background: #28a745; }
         .status-badge {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 2px 8px;
             border-radius: 20px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: bold;
         }
-
         .status-pendiente { background: #ffc107; color: #000; }
         .status-aceptado { background: #00a884; color: white; }
+        .status-enCamino { background: #17a2b8; color: white; }
         .status-entregado { background: #28a745; color: white; }
         .status-cancelado { background: #dc3545; color: white; }
-
         .history-item, .config-item {
             background: #f8f9fa;
             border-radius: 12px;
             padding: 8px;
             margin-bottom: 6px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
-
-        .config-panel {
-            background: #f8f9fa;
-            border-radius: 20px;
-            padding: 12px;
-            margin-top: 10px;
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #e9ecef;
         }
-
+        .tab {
+            padding: 8px 16px;
+            cursor: pointer;
+            border-radius: 20px 20px 0 0;
+            font-size: 0.8rem;
+        }
+        .tab.active {
+            background: #00a884;
+            color: white;
+        }
+        .panel-content { display: none; }
+        .panel-content.active { display: block; }
         i { margin-right: 5px; }
-
         @media (max-width: 768px) {
             .info-panel { max-height: 55%; padding: 12px; }
             .user-header { flex-direction: column; align-items: stretch; }
         }
-
-        .info-text {
-            color: #00a884;
-            font-size: 0.7rem;
-            margin-top: 4px;
-        }
+        .rating-stars { color: #ffc107; cursor: pointer; }
+        .filter-buttons { display: flex; gap: 5px; margin-bottom: 8px; flex-wrap: wrap; }
+        .filter-btn { background: #e9ecef; color: #333; padding: 4px 12px; font-size: 0.7rem; width: auto; margin: 0; }
+        .filter-btn.active { background: #00a884; color: white; }
     </style>
 </head>
 <body>
 
-<!-- Pantalla de autenticación -->
 <div id="authScreen" class="auth-container">
     <div class="auth-card">
         <i class="fas fa-motorcycle" style="font-size: 50px; color: #00a884; margin-bottom: 16px;"></i>
-        <h1>Didi Mandaditos</h1>
-        <p>Envíos rápidos · Rastreo en vivo</p>
+        <h1>Didi Mandaditos Pro</h1>
+        <p>Envíos rápidos · Rastreo en tiempo real</p>
         <div>
-            <div class="input-group">
-                <label><i class="fas fa-envelope"></i> Correo electrónico</label>
-                <input type="email" id="emailInput" placeholder="tu@email.com">
-            </div>
-            <div class="input-group">
-                <label><i class="fas fa-lock"></i> Contraseña</label>
-                <input type="password" id="passwordInput" placeholder="******">
-            </div>
-            <div class="input-group">
-                <label><i class="fas fa-user-tag"></i> Rol</label>
-                <select id="roleSelect">
-                    <option value="cliente">👤 Cliente</option>
-                    <option value="motomandado">🛵 Motomandado</option>
-                </select>
-            </div>
-            <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> Ingresar / Registrarse</button>
+            <div class="input-group"><label>📧 Correo</label><input type="email" id="emailInput" placeholder="tu@email.com"></div>
+            <div class="input-group"><label>🔒 Contraseña</label><input type="password" id="passwordInput" placeholder="******"></div>
+            <div class="input-group"><label>👤 Rol</label><select id="roleSelect"><option value="cliente">👤 Cliente</option><option value="motomandado">🛵 Motomandado</option></select></div>
+            <button id="loginBtn">Ingresar / Registrarse</button>
         </div>
         <div id="authMessage" style="margin-top: 16px; color: #dc3545; font-size: 0.8rem;"></div>
     </div>
 </div>
 
-<!-- Panel principal -->
 <div id="appMain" class="app-main">
-    <div class="map-container">
-        <div id="map"></div>
-    </div>
+    <div class="map-container"><div id="map"></div></div>
     <div class="info-panel">
         <div class="user-header">
             <div class="user-role-badge" id="roleBadge"><i class="fas fa-user"></i> Cargando...</div>
-            <div style="display: flex; gap: 8px;">
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
                 <button id="switchRoleBtn" class="role-switch-btn"><i class="fas fa-exchange-alt"></i> Cambiar Rol</button>
+                <button id="configMainBtn" class="config-btn"><i class="fas fa-cog"></i> Config</button>
                 <button id="logoutMainBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Salir</button>
             </div>
         </div>
 
-        <!-- Panel Cliente -->
+        <!-- Tabs para cliente -->
+        <div id="clienteTabs" class="tabs">
+            <div class="tab active" data-tab="nuevo">📦 Nuevo Mandado</div>
+            <div class="tab" data-tab="misPedidos">📋 Mis Pedidos</div>
+            <div class="tab" data-tab="historial">📜 Historial</div>
+        </div>
         <div id="clientePanel">
-            <div class="section-title"><i class="fas fa-map-marker-alt"></i> Selecciona tu destino en el mapa</div>
-            <div class="selected-location" id="selectedLocationDisplay">
-                <i class="fas fa-info-circle"></i> Haz clic en el mapa para seleccionar tu destino
+            <div id="tabNuevo" class="panel-content active">
+                <div class="section-title"><i class="fas fa-map-marker-alt"></i> Selecciona destino en el mapa</div>
+                <div class="selected-location" id="selectedLocationDisplay"><i class="fas fa-info-circle"></i> Haz clic en el mapa o busca</div>
+                <textarea id="descripcionMandado" rows="2" placeholder="📝 Descripción del paquete" style="width:100%; padding:10px; border-radius:16px; border:2px solid #e9ecef; margin-bottom:8px;"></textarea>
+                <input type="text" id="precioEstimado" placeholder="💰 Pago sugerido (MXN)" style="width:100%; padding:10px; border-radius:16px; border:2px solid #e9ecef; margin-bottom:8px;">
+                <input type="text" id="telefonoDestino" placeholder="📞 Teléfono del destinatario (opcional)" style="width:100%; padding:10px; border-radius:16px; border:2px solid #e9ecef; margin-bottom:8px;">
+                <button id="solicitarMandadoBtn"><i class="fas fa-paper-plane"></i> Solicitar Mandado</button>
             </div>
-            <textarea id="descripcionMandado" rows="2" placeholder="📝 Descripción del paquete / instrucciones" style="width:100%; padding:10px; border-radius:16px; border:2px solid #e9ecef; margin-bottom:8px; font-size:0.85rem;"></textarea>
-            <input type="text" id="precioEstimado" placeholder="💰 Pago sugerido (MXN)" style="width:100%; padding:10px; border-radius:16px; border:2px solid #e9ecef; margin-bottom:8px;">
-            <button id="solicitarMandadoBtn"><i class="fas fa-paper-plane"></i> Solicitar Mandado</button>
-            <button id="cancelarPedidoBtn" style="background:#dc3545; display:none;"><i class="fas fa-times-circle"></i> Cancelar Pedido Actual</button>
-            
-            <div class="order-status-card" id="orderStatusPanel">
-                <div><strong>Estado:</strong> <span id="estadoTexto" class="status-badge status-pendiente">Sin pedido activo</span></div>
-                <div id="driverLocationInfo" style="margin-top: 8px; font-size:0.8rem;"></div>
-                <div id="tiempoInfo" style="margin-top: 5px; font-size:0.7rem; color:#6c757d;"></div>
+            <div id="tabMisPedidos" class="panel-content">
+                <div class="section-title">Mis pedidos activos</div>
+                <div id="activeOrdersList" class="delivery-list">Cargando...</div>
             </div>
-            
-            <div class="section-title"><i class="fas fa-history"></i> Historial</div>
-            <div id="historialCliente" style="max-height: 120px; overflow-y: auto;"></div>
+            <div id="tabHistorial" class="panel-content">
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="todos">Todos</button>
+                    <button class="filter-btn" data-filter="entregado">Entregados</button>
+                    <button class="filter-btn" data-filter="cancelado">Cancelados</button>
+                </div>
+                <div id="historialCliente" style="max-height: 200px; overflow-y: auto;"></div>
+            </div>
         </div>
 
-        <!-- Panel Motomandado -->
-        <div id="motomandadoPanel" style="display: none;">
-            <div class="section-title"><i class="fas fa-list-ul"></i> Mandados disponibles</div>
-            <div id="availableOrdersList" class="delivery-list">Cargando...</div>
-            <div class="section-title"><i class="fas fa-tasks"></i> Mi mandado activo</div>
-            <div id="myAssignedDelivery" class="order-status-card"></div>
-            <div class="section-title"><i class="fas fa-chart-line"></i> Mis estadísticas</div>
-            <div id="statsMoto" style="background: #f8f9fa; border-radius: 16px; padding: 10px; font-size:0.85rem;"></div>
+        <!-- Tabs para motomandado -->
+        <div id="motoTabs" class="tabs" style="display:none;">
+            <div class="tab active" data-tab="disponibles">🆓 Disponibles</div>
+            <div class="tab" data-tab="misEntregas">🛵 Mis Entregas</div>
+            <div class="tab" data-tab="estadisticas">📊 Estadísticas</div>
+        </div>
+        <div id="motomandadoPanel" style="display:none;">
+            <div id="motoTabDisponibles" class="panel-content active">
+                <div class="section-title">Mandados disponibles cerca</div>
+                <div id="availableOrdersList" class="delivery-list">Cargando...</div>
+            </div>
+            <div id="motoTabMisEntregas" class="panel-content">
+                <div class="section-title">Mis entregas activas</div>
+                <div id="myAssignedDeliveries" class="delivery-list"></div>
+            </div>
+            <div id="motoTabEstadisticas" class="panel-content">
+                <div id="statsMoto" style="background:#f8f9fa; border-radius:16px; padding:12px;"></div>
+                <div id="motoHistory" style="margin-top:12px;"></div>
+            </div>
         </div>
 
         <!-- Panel Configuración -->
-        <div id="configPanel" style="display: none;">
-            <div class="section-title"><i class="fas fa-cog"></i> Configuración</div>
-            <div class="config-panel">
-                <div><i class="fas fa-user"></i> <strong>Usuario:</strong> <span id="configUserEmail"></span></div>
-                <div style="margin-top: 8px;"><i class="fas fa-id-card"></i> <strong>Rol actual:</strong> <span id="configCurrentRole"></span></div>
-                <div style="margin-top: 8px;"><i class="fas fa-database"></i> <strong>Modo offline:</strong> Activado (caché local)</div>
-                <div style="margin-top: 8px;"><i class="fas fa-trash-alt"></i> <button id="clearCacheBtn" style="background:#6c757d; padding:8px; margin-top:5px;"><i class="fas fa-broom"></i> Limpiar caché local</button></div>
+        <div id="configPanel" style="display:none;">
+            <div class="section-title"><i class="fas fa-cog"></i> Configuración Avanzada</div>
+            <div class="config-item"><i class="fas fa-user"></i> <strong>Usuario:</strong> <span id="configUserEmail"></span></div>
+            <div class="config-item"><i class="fas fa-id-card"></i> <strong>Rol actual:</strong> <span id="configCurrentRole"></span></div>
+            <div class="config-item"><i class="fas fa-map-marker-alt"></i> <strong>Modo ubicación:</strong> 
+                <select id="locationMode"><option value="auto">Automático (GPS)</option><option value="manual">Manual (selección en mapa)</option></select>
             </div>
+            <div class="config-item"><i class="fas fa-bell"></i> <strong>Notificaciones:</strong> <input type="checkbox" id="notifToggle" checked></div>
+            <div class="config-item"><i class="fas fa-database"></i> <strong>Modo offline:</strong> Activado (caché)</div>
+            <div class="config-item"><button id="clearCacheBtn" style="background:#6c757d; padding:8px; margin-top:5px;"><i class="fas fa-broom"></i> Limpiar caché</button></div>
+            <div class="config-item"><button id="exportDataBtn" style="background:#17a2b8; padding:8px;"><i class="fas fa-download"></i> Exportar mis datos</button></div>
         </div>
     </div>
 </div>
 
 <script>
-    // Configuración Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyASox7mRak5V0py29htEVWCVeipGpA0yfs",
         authDomain: "galloslivebadge.firebaseapp.com",
@@ -374,373 +320,271 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // Variables
-    let currentUser = null;
-    let currentRole = null;
-    let map = null;
-    let userMarker = null;
-    let driverMarker = null;
-    let selectedDestMarker = null;
-    let selectedDestCoords = null;
-    let selectedDestAddress = "";
-    let activeOrderId = null;
-    let assignedOrderId = null;
-    let watchPositionId = null;
-    let orderListenerRef = null;
-    let currentPanel = "cliente";
+    let currentUser = null, currentRole = null, map = null, userMarker = null, watchPositionId = null;
+    let selectedDestCoords = null, selectedDestAddress = "";
+    let activeOrders = new Map(); // Para cliente: múltiples pedidos activos
+    let motoActiveDeliveries = new Map();
+    let currentFilter = "todos";
 
-    const TUXTLA_CENTER = [16.7549, -93.1149];
+    const TUXTLA = [16.7549, -93.1149];
 
-    // Caché local con localStorage
-    function saveToCache(key, data) {
-        localStorage.setItem(`didimandados_${key}`, JSON.stringify({ data, timestamp: Date.now() }));
-    }
+    function saveCache(key, data) { localStorage.setItem(`dm_${key}`, JSON.stringify({ data, t: Date.now() })); }
+    function getCache(key, maxAge=60000) { const item = localStorage.getItem(`dm_${key}`); if(!item) return null; const parsed = JSON.parse(item); if(Date.now()-parsed.t > maxAge) return null; return parsed.data; }
 
-    function getFromCache(key, maxAge = 60000) {
-        const cached = localStorage.getItem(`didimandados_${key}`);
-        if (!cached) return null;
-        const item = JSON.parse(cached);
-        if (Date.now() - item.timestamp > maxAge) return null;
-        return item.data;
-    }
-
-    // Inicializar mapa
     function initMap() {
-        if (map) return;
-        map = L.map('map').setView(TUXTLA_CENTER, 14);
-        
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            subdomains: 'abcd',
-            maxZoom: 19
-        }).addTo(map);
-        
-        const geocoder = L.Control.geocoder({
-            defaultMarkGeocode: false,
-            placeholder: 'Buscar dirección...',
-            position: 'topleft'
-        }).on('markgeocode', function(e) {
-            if (currentRole !== 'cliente') return;
-            if (selectedDestMarker) map.removeLayer(selectedDestMarker);
+        if(map) return;
+        map = L.map('map').setView(TUXTLA, 13);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap', subdomains: 'abcd' }).addTo(map);
+        const geocoder = L.Control.geocoder({ defaultMarkGeocode: false, placeholder: 'Buscar destino...' }).on('markgeocode', function(e) {
+            if(currentRole !== 'cliente') return;
             selectedDestCoords = { lat: e.geocode.center.lat, lng: e.geocode.center.lng };
             selectedDestAddress = e.geocode.name;
-            selectedDestMarker = L.marker([e.geocode.center.lat, e.geocode.center.lng], {
-                icon: L.divIcon({ html: '<i class="fas fa-map-pin" style="font-size:28px;color:#ff4444;"></i>', iconSize: [28, 28] })
-            }).addTo(map);
-            document.getElementById('selectedLocationDisplay').innerHTML = `<i class="fas fa-check-circle"></i> Destino: ${selectedDestAddress.substring(0, 60)}`;
+            if(window.destMarker) map.removeLayer(window.destMarker);
+            window.destMarker = L.marker([e.geocode.center.lat, e.geocode.center.lng], { icon: L.divIcon({ html: '<i class="fas fa-map-pin" style="font-size:28px;color:#ff4444;"></i>', iconSize: [28,28] }) }).addTo(map);
+            document.getElementById('selectedLocationDisplay').innerHTML = `<i class="fas fa-check-circle"></i> Destino: ${selectedDestAddress.substring(0,60)}`;
             map.setView(e.geocode.center, 16);
         }).addTo(map);
-        
-        map.on('click', async function(e) {
-            if (currentRole !== 'cliente') return;
-            if (selectedDestMarker) map.removeLayer(selectedDestMarker);
+        map.on('click', async (e) => {
+            if(currentRole !== 'cliente') return;
+            if(window.destMarker) map.removeLayer(window.destMarker);
             selectedDestCoords = { lat: e.latlng.lat, lng: e.latlng.lng };
             try {
-                const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}&zoom=18`);
-                const data = await response.json();
+                const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
+                const data = await resp.json();
                 selectedDestAddress = data.display_name || `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
-            } catch(err) {
-                selectedDestAddress = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
-            }
-            selectedDestMarker = L.marker([e.latlng.lat, e.latlng.lng], {
-                icon: L.divIcon({ html: '<i class="fas fa-map-pin" style="font-size:28px;color:#ff4444;"></i>', iconSize: [28, 28] })
-            }).addTo(map);
-            document.getElementById('selectedLocationDisplay').innerHTML = `<i class="fas fa-check-circle"></i> Destino: ${selectedDestAddress.substring(0, 60)}`;
+            } catch(err) { selectedDestAddress = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; }
+            window.destMarker = L.marker([e.latlng.lat, e.latlng.lng], { icon: L.divIcon({ html: '<i class="fas fa-map-pin" style="font-size:28px;color:#ff4444;"></i>', iconSize: [28,28] }) }).addTo(map);
+            document.getElementById('selectedLocationDisplay').innerHTML = `<i class="fas fa-check-circle"></i> Destino: ${selectedDestAddress.substring(0,60)}`;
         });
     }
 
-    // Obtener ubicación
-    function getCurrentPosition() {
-        return new Promise((resolve, reject) => {
-            if (!navigator.geolocation) reject("No soportado");
-            navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 });
-        });
+    async function getPosition() {
+        return new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 }));
     }
 
-    // Actualizar ubicación
     async function updateLocation() {
-        if (!currentUser) return;
+        if(!currentUser) return;
         try {
-            const pos = await getCurrentPosition();
-            const lat = pos.coords.latitude, lng = pos.coords.longitude;
-            await db.ref(`users/${currentUser.uid}/location`).set({ lat, lng, timestamp: Date.now() });
-            if (map) {
-                if (!userMarker) {
-                    userMarker = L.marker([lat, lng], { title: 'Mi ubicación' }).addTo(map);
-                } else {
-                    userMarker.setLatLng([lat, lng]);
-                }
-                map.setView([lat, lng], 15);
-            }
-            if (currentRole === 'motomandado' && assignedOrderId) {
-                await db.ref(`orders/${assignedOrderId}/driverLocation`).set({ lat, lng });
-            }
-        } catch (err) { console.warn(err); }
+            const pos = await getPosition();
+            const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude, timestamp: Date.now() };
+            await db.ref(`users/${currentUser.uid}/location`).set(loc);
+            if(!userMarker) userMarker = L.marker([loc.lat, loc.lng], { title: 'Mi ubicación' }).addTo(map);
+            else userMarker.setLatLng([loc.lat, loc.lng]);
+            map.setView([loc.lat, loc.lng], 15);
+        } catch(e) { console.warn(e); }
     }
 
     function startTracking() {
-        if (watchPositionId) navigator.geolocation.clearWatch(watchPositionId);
+        if(watchPositionId) navigator.geolocation.clearWatch(watchPositionId);
         watchPositionId = navigator.geolocation.watchPosition(async (pos) => {
-            if (!currentUser) return;
-            const lat = pos.coords.latitude, lng = pos.coords.longitude;
-            await db.ref(`users/${currentUser.uid}/location`).set({ lat, lng, timestamp: Date.now() });
-            if (userMarker) userMarker.setLatLng([lat, lng]);
-            if (currentRole === 'motomandado' && assignedOrderId) {
-                await db.ref(`orders/${assignedOrderId}/driverLocation`).set({ lat, lng });
+            if(!currentUser) return;
+            const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude, timestamp: Date.now() };
+            await db.ref(`users/${currentUser.uid}/location`).set(loc);
+            if(userMarker) userMarker.setLatLng([loc.lat, loc.lng]);
+            // Actualizar ubicación en pedidos activos como moto
+            if(currentRole === 'motomandado') {
+                for(let [orderId, order] of motoActiveDeliveries) {
+                    await db.ref(`orders/${orderId}/driverLocation`).set(loc);
+                }
             }
         }, (err) => console.warn(err), { enableHighAccuracy: true });
     }
 
-    // Verificar si hay pedido activo
-    async function hasActiveOrder() {
-        if (!currentUser) return false;
-        const snapshot = await db.ref('orders').orderByChild('clientId').equalTo(currentUser.uid).once('value');
-        let active = false;
-        snapshot.forEach(child => {
-            const order = child.val();
-            if (order.status === 'pendiente' || order.status === 'aceptado') {
-                active = true;
-                activeOrderId = child.key;
-            }
-        });
-        return active;
-    }
-
-    // Solicitar mandado (con prevención de duplicados)
+    // Cliente: solicitar múltiples pedidos
     async function requestOrder() {
-        if (!currentUser || currentRole !== 'cliente') {
-            Swal.fire('Error', 'Debes ser cliente', 'error');
-            return;
-        }
-        
-        // Verificar si ya tiene pedido activo
-        const hasActive = await hasActiveOrder();
-        if (hasActive) {
-            Swal.fire('Pedido activo', 'Ya tienes un pedido en curso. No puedes solicitar otro hasta que se complete o cancele.', 'warning');
-            return;
-        }
-        
-        if (!selectedDestCoords) {
-            Swal.fire('Sin destino', 'Selecciona un destino en el mapa', 'warning');
-            return;
-        }
-        
-        const descripcion = document.getElementById('descripcionMandado').value.trim();
-        const pago = document.getElementById('precioEstimado').value.trim();
-        
-        let originCoords = null;
-        try {
-            const pos = await getCurrentPosition();
-            originCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-        } catch(e) { originCoords = { lat: TUXTLA_CENTER[0], lng: TUXTLA_CENTER[1] }; }
+        if(!currentUser || currentRole !== 'cliente') return Swal.fire('Error', 'Debes ser cliente', 'error');
+        if(!selectedDestCoords) return Swal.fire('Sin destino', 'Selecciona un destino en el mapa', 'warning');
+        const descripcion = document.getElementById('descripcionMandado').value.trim() || "Sin descripción";
+        const pago = document.getElementById('precioEstimado').value.trim() || "A convenir";
+        const telefono = document.getElementById('telefonoDestino').value.trim() || "";
+        let originCoords;
+        try { const pos = await getPosition(); originCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude }; }
+        catch(e) { originCoords = { lat: TUXTLA[0], lng: TUXTLA[1] }; }
         
         const newOrderRef = db.ref('orders').push();
         await newOrderRef.set({
-            clientId: currentUser.uid,
-            clientEmail: currentUser.email,
-            destino: selectedDestAddress,
-            destinoCoords: selectedDestCoords,
-            origenCoords: originCoords,
-            descripcion: descripcion || "Sin descripción",
-            pago: pago || "A convenir",
-            status: 'pendiente',
-            timestamp: Date.now(),
-            driverId: null
+            clientId: currentUser.uid, clientEmail: currentUser.email, destino: selectedDestAddress,
+            destinoCoords: selectedDestCoords, origenCoords: originCoords, descripcion, pago, telefono,
+            status: 'pendiente', timestamp: Date.now(), driverId: null, clientRating: null
         });
-        
-        activeOrderId = newOrderRef.key;
-        document.getElementById('estadoTexto').innerText = '⏳ Buscando repartidor...';
-        document.getElementById('cancelarPedidoBtn').style.display = 'block';
-        if (selectedDestMarker) map.removeLayer(selectedDestMarker);
+        if(window.destMarker) map.removeLayer(window.destMarker);
         selectedDestCoords = null;
         document.getElementById('selectedLocationDisplay').innerHTML = '<i class="fas fa-info-circle"></i> Haz clic en el mapa para seleccionar tu destino';
         document.getElementById('descripcionMandado').value = '';
         document.getElementById('precioEstimado').value = '';
-        
-        listenToOrder(activeOrderId);
-        Swal.fire('¡Solicitado!', 'Tu mandado ha sido publicado. Espera a que un repartidor lo acepte.', 'success');
+        document.getElementById('telefonoDestino').value = '';
+        Swal.fire('¡Solicitado!', 'Tu mandado ha sido publicado', 'success');
+        loadClientActiveOrders();
     }
 
-    // Cancelar pedido
-    async function cancelOrder() {
-        if (!activeOrderId) return;
-        const result = await Swal.fire({
-            title: '¿Cancelar pedido?',
-            text: 'Esta acción no se puede deshacer',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#dc3545',
-            confirmButtonText: 'Sí, cancelar'
+    async function loadClientActiveOrders() {
+        if(!currentUser || currentRole !== 'cliente') return;
+        const snapshot = await db.ref('orders').orderByChild('clientId').equalTo(currentUser.uid).once('value');
+        const container = document.getElementById('activeOrdersList');
+        let html = '';
+        snapshot.forEach(child => {
+            const o = child.val();
+            if(o.status === 'pendiente' || o.status === 'aceptado' || o.status === 'enCamino') {
+                html += `<div class="order-item">
+                    <div><strong>${o.destino.substring(0,40)}</strong><br>
+                    <span class="status-badge status-${o.status}">${o.status === 'pendiente' ? '⏳ Pendiente' : o.status === 'aceptado' ? '🛵 Aceptado' : '🚚 En camino'}</span>
+                    💰 ${o.pago}</div>
+                    <div><button class="cancel-order-btn" data-id="${child.key}"><i class="fas fa-times"></i> Cancelar</button>
+                    ${o.status === 'entregado' ? `<div class="rating-stars" data-id="${child.key}">⭐⭐⭐⭐⭐</div>` : ''}</div>
+                </div>`;
+                activeOrders.set(child.key, o);
+            }
         });
-        if (result.isConfirmed) {
-            await db.ref(`orders/${activeOrderId}`).update({ status: 'cancelado', cancelledAt: Date.now() });
-            if (orderListenerRef) db.ref(`orders/${activeOrderId}`).off();
-            activeOrderId = null;
-            document.getElementById('estadoTexto').innerText = '❌ Cancelado';
-            document.getElementById('estadoTexto').className = 'status-badge status-cancelado';
-            document.getElementById('cancelarPedidoBtn').style.display = 'none';
-            if (driverMarker) map.removeLayer(driverMarker);
-            Swal.fire('Cancelado', 'Tu pedido ha sido cancelado', 'info');
+        container.innerHTML = html || "<i class='fas fa-inbox'></i> No hay pedidos activos";
+        document.querySelectorAll('.cancel-order-btn').forEach(btn => btn.addEventListener('click', (e) => cancelOrder(btn.dataset.id)));
+    }
+
+    async function cancelOrder(orderId) {
+        const result = await Swal.fire({ title: 'Cancelar pedido?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545', confirmButtonText: 'Cancelar' });
+        if(result.isConfirmed) {
+            await db.ref(`orders/${orderId}`).update({ status: 'cancelado', cancelledAt: Date.now() });
+            Swal.fire('Cancelado', 'Pedido cancelado', 'info');
+            loadClientActiveOrders();
             loadClientHistory();
         }
     }
 
-    // Escuchar pedido
-    function listenToOrder(orderId) {
-        if (orderListenerRef) orderListenerRef();
-        const orderRef = db.ref(`orders/${orderId}`);
-        orderListenerRef = orderRef.on('value', (snap) => {
-            const order = snap.val();
-            if (!order) return;
-            
-            const estadoSpan = document.getElementById('estadoTexto');
-            if (order.status === 'pendiente') {
-                estadoSpan.innerText = '⏳ Buscando repartidor...';
-                document.getElementById('cancelarPedidoBtn').style.display = 'block';
-            } else if (order.status === 'aceptado') {
-                estadoSpan.innerText = '🛵 En camino';
-                document.getElementById('cancelarPedidoBtn').style.display = 'none';
-                document.getElementById('driverLocationInfo').innerHTML = '<i class="fas fa-motorcycle"></i> Repartidor en ruta';
-                if (order.driverLocation) {
-                    if (driverMarker) driverMarker.setLatLng([order.driverLocation.lat, order.driverLocation.lng]);
-                    else driverMarker = L.marker([order.driverLocation.lat, order.driverLocation.lng], {
-                        icon: L.divIcon({ html: '<i class="fas fa-motorcycle" style="font-size:22px;color:#00a884;"></i>', iconSize: [22, 22] })
-                    }).addTo(map);
-                }
-                document.getElementById('tiempoInfo').innerHTML = `<i class="fas fa-clock"></i> Aceptado: ${new Date(order.acceptedAt).toLocaleTimeString()}`;
-            } else if (order.status === 'entregado') {
-                estadoSpan.innerText = '✅ Entregado';
-                if (driverMarker) map.removeLayer(driverMarker);
-                activeOrderId = null;
-                document.getElementById('cancelarPedidoBtn').style.display = 'none';
-                loadClientHistory();
-                orderRef.off();
-                Swal.fire('¡Entregado!', 'Tu mandado ha sido completado', 'success');
-            } else if (order.status === 'cancelado') {
-                estadoSpan.innerText = '❌ Cancelado';
-                activeOrderId = null;
-                document.getElementById('cancelarPedidoBtn').style.display = 'none';
-                orderRef.off();
-            }
-            estadoSpan.className = `status-badge status-${order.status}`;
-        });
-    }
-
-    // Cargar pedidos para moto
-    function loadAvailableOrders() {
-        if (!currentUser || currentRole !== 'motomandado') return;
-        db.ref('orders').off('value');
-        db.ref('orders').on('value', (snap) => {
-            const orders = snap.val();
-            const container = document.getElementById('availableOrdersList');
-            if (!container) return;
-            if (!orders) { container.innerHTML = "<i class='fas fa-inbox'></i> No hay pedidos"; return; }
-            let html = '';
-            for (let id in orders) {
-                const order = orders[id];
-                if (order.status === 'pendiente' && !order.driverId) {
-                    html += `<div class="delivery-item">
-                        <div><strong>${order.destino.substring(0, 45)}</strong><br><small>📦 ${order.descripcion} | 💰 ${order.pago}</small></div>
-                        <button class="accept-btn" data-orderid="${id}"><i class="fas fa-check-circle"></i> Aceptar</button>
-                    </div>`;
-                }
-            }
-            container.innerHTML = html || "<i class='fas fa-clock'></i> No hay mandados";
-            document.querySelectorAll('.accept-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => acceptOrder(btn.getAttribute('data-orderid')));
-            });
-        });
-    }
-
-    // Aceptar pedido
-    async function acceptOrder(orderId) {
-        if (!currentUser || currentRole !== 'motomandado') return;
-        const orderRef = db.ref(`orders/${orderId}`);
-        const snap = await orderRef.once('value');
-        const order = snap.val();
-        if (!order || order.status !== 'pendiente') { Swal.fire('Error', 'Pedido no disponible', 'error'); return; }
-        await orderRef.update({ driverId: currentUser.uid, status: 'aceptado', acceptedAt: Date.now() });
-        assignedOrderId = orderId;
-        document.getElementById('myAssignedDelivery').innerHTML = `
-            <div><strong>Mandado activo</strong><br>Destino: ${order.destino}<br>📦 ${order.descripcion}<br>💰 ${order.pago}</div>
-            <button id="completeOrderBtn" class="accept-btn" style="background:#28a745;"><i class="fas fa-flag-checkered"></i> Entregar</button>
-        `;
-        document.getElementById('completeOrderBtn')?.addEventListener('click', async () => {
-            await db.ref(`orders/${assignedOrderId}`).update({ status: 'entregado', completedAt: Date.now() });
-            const statsRef = db.ref(`users/${currentUser.uid}/stats`);
-            const currentStats = (await statsRef.once('value')).val() || { deliveries: 0, earnings: 0 };
-            const pagoNum = parseInt(order.pago) || 0;
-            await statsRef.set({ deliveries: currentStats.deliveries + 1, earnings: currentStats.earnings + pagoNum });
-            assignedOrderId = null;
-            document.getElementById('myAssignedDelivery').innerHTML = "<i class='fas fa-trophy'></i> ¡Completado!";
-            loadMotoStats();
-            Swal.fire('¡Completado!', 'Mandado entregado exitosamente', 'success');
-        });
-        loadAvailableOrders();
-        Swal.fire('Aceptado', 'Has aceptado el mandado, ve al cliente', 'success');
-    }
-
-    // Historial
     async function loadClientHistory() {
-        if (!currentUser || currentRole !== 'cliente') return;
-        const cached = getFromCache(`history_${currentUser.uid}`, 30000);
-        if (cached) { renderHistory(cached); return; }
-        const snap = await db.ref('orders').orderByChild('clientId').equalTo(currentUser.uid).once('value');
-        const orders = [];
-        snap.forEach(child => orders.push(child.val()));
-        saveToCache(`history_${currentUser.uid}`, orders);
-        renderHistory(orders);
+        if(!currentUser || currentRole !== 'cliente') return;
+        const snapshot = await db.ref('orders').orderByChild('clientId').equalTo(currentUser.uid).once('value');
+        let orders = [];
+        snapshot.forEach(child => orders.push({ id: child.key, ...child.val() }));
+        saveCache(`history_${currentUser.uid}`, orders);
+        renderHistory(orders, currentFilter);
     }
-    
-    function renderHistory(orders) {
+
+    function renderHistory(orders, filter) {
+        const filtered = orders.filter(o => filter === 'todos' || o.status === filter);
         const historyDiv = document.getElementById('historialCliente');
         let html = '';
-        orders.forEach(o => {
-            if (o.status === 'entregado' || o.status === 'cancelado') {
-                html += `<div class="history-item"><i class="fas ${o.status === 'entregado' ? 'fa-check-circle' : 'fa-times-circle'}" style="color:${o.status === 'entregado' ? '#28a745' : '#dc3545'}"></i> ${o.destino.substring(0, 35)} - ${new Date(o.timestamp).toLocaleDateString()}<br>💰 ${o.pago} | ${o.status}</div>`;
-            }
+        filtered.forEach(o => {
+            html += `<div class="history-item">
+                <i class="fas ${o.status === 'entregado' ? 'fa-check-circle' : 'fa-times-circle'}" style="color:${o.status === 'entregado' ? '#28a745' : '#dc3545'}"></i>
+                ${o.destino.substring(0,35)} - ${new Date(o.timestamp).toLocaleDateString()}<br>💰 ${o.pago} | ${o.status}
+                ${o.status === 'entregado' && !o.clientRating ? `<div class="rating-stars" data-id="${o.id}">⭐⭐⭐⭐⭐ Calificar</div>` : ''}
+            </div>`;
         });
         historyDiv.innerHTML = html || "<i class='fas fa-history'></i> Sin historial";
     }
 
-    async function loadMotoStats() {
-        if (!currentUser || currentRole !== 'motomandado') return;
-        const stats = (await db.ref(`users/${currentUser.uid}/stats`).once('value')).val() || { deliveries: 0, earnings: 0 };
-        document.getElementById('statsMoto').innerHTML = `<i class="fas fa-truck"></i> Entregas: ${stats.deliveries} | 💰 $${stats.earnings} MXN`;
+    // Moto: cargar pedidos disponibles y asignaciones múltiples
+    function loadAvailableOrders() {
+        if(!currentUser || currentRole !== 'motomandado') return;
+        db.ref('orders').off('value');
+        db.ref('orders').on('value', (snap) => {
+            const orders = snap.val();
+            const container = document.getElementById('availableOrdersList');
+            if(!container) return;
+            let html = '';
+            for(let id in orders) {
+                const o = orders[id];
+                if(o.status === 'pendiente' && !o.driverId) {
+                    html += `<div class="delivery-item">
+                        <div><strong>${o.destino.substring(0,45)}</strong><br><small>📦 ${o.descripcion} | 💰 ${o.pago}</small></div>
+                        <button class="accept-btn" data-id="${id}"><i class="fas fa-check"></i> Aceptar</button>
+                    </div>`;
+                }
+            }
+            container.innerHTML = html || "<i class='fas fa-clock'></i> No hay mandados";
+            document.querySelectorAll('.accept-btn').forEach(btn => btn.addEventListener('click', (e) => acceptOrder(btn.dataset.id)));
+        });
     }
 
-    // Cambiar rol
+    async function acceptOrder(orderId) {
+        if(!currentUser || currentRole !== 'motomandado') return;
+        const orderRef = db.ref(`orders/${orderId}`);
+        const snap = await orderRef.once('value');
+        const order = snap.val();
+        if(!order || order.status !== 'pendiente') return Swal.fire('Error', 'Pedido no disponible', 'error');
+        await orderRef.update({ driverId: currentUser.uid, status: 'aceptado', acceptedAt: Date.now() });
+        Swal.fire('Aceptado', 'Mandado asignado', 'success');
+        loadMotoActiveDeliveries();
+    }
+
+    async function loadMotoActiveDeliveries() {
+        if(!currentUser || currentRole !== 'motomandado') return;
+        const snapshot = await db.ref('orders').orderByChild('driverId').equalTo(currentUser.uid).once('value');
+        const container = document.getElementById('myAssignedDeliveries');
+        let html = '';
+        motoActiveDeliveries.clear();
+        snapshot.forEach(child => {
+            const o = child.val();
+            if(o.status === 'aceptado' || o.status === 'enCamino') {
+                html += `<div class="delivery-item">
+                    <div><strong>${o.destino.substring(0,40)}</strong><br>📦 ${o.descripcion} | 💰 ${o.pago}
+                    <span class="status-badge status-${o.status}">${o.status}</span></div>
+                    <div><button class="complete-btn" data-id="${child.key}"><i class="fas fa-flag-checkered"></i> Entregar</button>
+                    <button class="cancel-order-btn" data-id="${child.key}"><i class="fas fa-times"></i> Cancelar entrega</button></div>
+                </div>`;
+                motoActiveDeliveries.set(child.key, o);
+            }
+        });
+        container.innerHTML = html || "<i class='fas fa-inbox'></i> Sin entregas activas";
+        document.querySelectorAll('.complete-btn').forEach(btn => btn.addEventListener('click', () => completeDelivery(btn.dataset.id)));
+        document.querySelectorAll('.cancel-order-btn').forEach(btn => btn.addEventListener('click', () => cancelMotoDelivery(btn.dataset.id)));
+    }
+
+    async function completeDelivery(orderId) {
+        const result = await Swal.fire({ title: '¿Completar entrega?', icon: 'question', showCancelButton: true, confirmButtonColor: '#28a745', confirmButtonText: 'Completar' });
+        if(result.isConfirmed) {
+            await db.ref(`orders/${orderId}`).update({ status: 'entregado', completedAt: Date.now() });
+            const statsRef = db.ref(`users/${currentUser.uid}/stats`);
+            const stats = (await statsRef.once('value')).val() || { deliveries: 0, earnings: 0 };
+            const order = motoActiveDeliveries.get(orderId);
+            const pago = parseInt(order?.pago) || 0;
+            await statsRef.set({ deliveries: stats.deliveries + 1, earnings: stats.earnings + pago });
+            Swal.fire('Completado', 'Entrega finalizada', 'success');
+            loadMotoActiveDeliveries();
+            loadMotoStats();
+        }
+    }
+
+    async function cancelMotoDelivery(orderId) {
+        await db.ref(`orders/${orderId}`).update({ status: 'pendiente', driverId: null });
+        Swal.fire('Cancelado', 'Has cancelado esta entrega', 'info');
+        loadMotoActiveDeliveries();
+    }
+
+    async function loadMotoStats() {
+        if(!currentUser || currentRole !== 'motomandado') return;
+        const stats = (await db.ref(`users/${currentUser.uid}/stats`).once('value')).val() || { deliveries: 0, earnings: 0 };
+        const historySnap = await db.ref('orders').orderByChild('driverId').equalTo(currentUser.uid).once('value');
+        let completed = 0;
+        historySnap.forEach(child => { if(child.val().status === 'entregado') completed++; });
+        document.getElementById('statsMoto').innerHTML = `
+            <i class="fas fa-truck"></i> <strong>Entregas totales:</strong> ${stats.deliveries}<br>
+            <i class="fas fa-money-bill"></i> <strong>Ganancias:</strong> $${stats.earnings} MXN<br>
+            <i class="fas fa-star"></i> <strong>Pedidos completados:</strong> ${completed}
+        `;
+    }
+
     async function switchRole() {
         const newRole = currentRole === 'cliente' ? 'motomandado' : 'cliente';
         await db.ref(`users/${currentUser.uid}/role`).set(newRole);
         currentRole = newRole;
-        activeOrderId = null;
-        assignedOrderId = null;
-        if (selectedDestMarker) map.removeLayer(selectedDestMarker);
-        if (driverMarker) map.removeLayer(driverMarker);
-        applyUI(currentRole);
+        applyUI();
         Swal.fire('Rol cambiado', `Ahora eres ${currentRole === 'cliente' ? 'Cliente' : 'Motomandado'}`, 'success');
     }
 
-    function applyUI(role) {
-        const clienteDiv = document.getElementById('clientePanel');
-        const motoDiv = document.getElementById('motomandadoPanel');
-        const configDiv = document.getElementById('configPanel');
-        configDiv.style.display = 'none';
-        if (role === 'cliente') {
-            clienteDiv.style.display = 'block';
-            motoDiv.style.display = 'none';
-            document.getElementById('roleBadge').innerHTML = '<i class="fas fa-user"></i> Cliente';
+    function applyUI() {
+        const isCliente = currentRole === 'cliente';
+        document.getElementById('clientePanel').style.display = isCliente ? 'block' : 'none';
+        document.getElementById('motomandadoPanel').style.display = isCliente ? 'none' : 'block';
+        document.getElementById('clienteTabs').style.display = isCliente ? 'flex' : 'none';
+        document.getElementById('motoTabs').style.display = isCliente ? 'none' : 'flex';
+        document.getElementById('configPanel').style.display = 'none';
+        document.getElementById('roleBadge').innerHTML = isCliente ? '<i class="fas fa-user"></i> Cliente' : '<i class="fas fa-motorcycle"></i> Motomandado';
+        if(isCliente) {
+            loadClientActiveOrders();
             loadClientHistory();
-            document.getElementById('cancelarPedidoBtn').onclick = cancelOrder;
-            hasActiveOrder().then(active => {
-                if (active && activeOrderId) listenToOrder(activeOrderId);
-            });
         } else {
-            clienteDiv.style.display = 'none';
-            motoDiv.style.display = 'block';
-            document.getElementById('roleBadge').innerHTML = '<i class="fas fa-motorcycle"></i> Motomandado';
             loadAvailableOrders();
+            loadMotoActiveDeliveries();
             loadMotoStats();
         }
     }
@@ -748,63 +592,90 @@
     function showConfig() {
         document.getElementById('clientePanel').style.display = 'none';
         document.getElementById('motomandadoPanel').style.display = 'none';
+        document.getElementById('clienteTabs').style.display = 'none';
+        document.getElementById('motoTabs').style.display = 'none';
         document.getElementById('configPanel').style.display = 'block';
         document.getElementById('configUserEmail').innerText = currentUser?.email || '';
         document.getElementById('configCurrentRole').innerText = currentRole === 'cliente' ? 'Cliente' : 'Motomandado';
     }
 
     async function logout() {
-        if (watchPositionId) navigator.geolocation.clearWatch(watchPositionId);
-        if (currentUser) await db.ref(`users/${currentUser.uid}/location`).remove();
+        if(watchPositionId) navigator.geolocation.clearWatch(watchPositionId);
+        if(currentUser) await db.ref(`users/${currentUser.uid}/location`).remove();
         await auth.signOut();
         location.reload();
     }
 
-    // Autenticación
+    // Eventos y autenticación
     auth.onAuthStateChanged(async (user) => {
-        if (user) {
+        if(user) {
             currentUser = user;
             const roleSnap = await db.ref(`users/${user.uid}/role`).once('value');
             currentRole = roleSnap.val() || 'cliente';
-            if (!roleSnap.exists()) await db.ref(`users/${user.uid}/role`).set('cliente');
+            if(!roleSnap.exists()) await db.ref(`users/${user.uid}/role`).set('cliente');
             document.getElementById('authScreen').style.display = 'none';
             document.getElementById('appMain').style.display = 'flex';
             initMap();
             await updateLocation();
             startTracking();
-            applyUI(currentRole);
+            applyUI();
         } else {
             document.getElementById('authScreen').style.display = 'flex';
             document.getElementById('appMain').style.display = 'none';
         }
     });
 
-    // Eventos
     document.getElementById('loginBtn').addEventListener('click', async () => {
-        const email = document.getElementById('emailInput').value;
-        const pwd = document.getElementById('passwordInput').value;
-        const role = document.getElementById('roleSelect').value;
-        if (!email || !pwd) { document.getElementById('authMessage').innerText = "Completa campos"; return; }
+        const email = document.getElementById('emailInput').value, pwd = document.getElementById('passwordInput').value, role = document.getElementById('roleSelect').value;
+        if(!email || !pwd) return document.getElementById('authMessage').innerText = "Completa campos";
         try {
             await auth.signInWithEmailAndPassword(email, pwd);
             await db.ref(`users/${auth.currentUser.uid}/role`).set(role);
-        } catch (err) {
-            if (err.code === 'auth/user-not-found') {
+        } catch(err) {
+            if(err.code === 'auth/user-not-found') {
                 await auth.createUserWithEmailAndPassword(email, pwd);
                 await db.ref(`users/${auth.currentUser.uid}/role`).set(role);
-            } else { document.getElementById('authMessage').innerText = err.message; }
+            } else document.getElementById('authMessage').innerText = err.message;
         }
     });
-    
+
     document.getElementById('solicitarMandadoBtn')?.addEventListener('click', requestOrder);
     document.getElementById('logoutMainBtn')?.addEventListener('click', logout);
     document.getElementById('switchRoleBtn')?.addEventListener('click', switchRole);
-    document.getElementById('clearCacheBtn')?.addEventListener('click', () => { localStorage.clear(); Swal.fire('Caché limpia', 'Se ha limpiado el caché local', 'success'); });
-    
-    // Botón de configuración (doble click en badge)
-    let badge = document.getElementById('roleBadge');
-    if (badge) badge.addEventListener('dblclick', showConfig);
-    
+    document.getElementById('configMainBtn')?.addEventListener('click', showConfig);
+    document.getElementById('clearCacheBtn')?.addEventListener('click', () => { localStorage.clear(); Swal.fire('Caché limpia', 'Datos locales eliminados', 'success'); });
+    document.getElementById('exportDataBtn')?.addEventListener('click', () => { Swal.fire('Exportar', 'Función de exportación disponible en versión premium', 'info'); });
+
+    // Tabs cliente
+    document.querySelectorAll('#clienteTabs .tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('#clienteTabs .tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            document.querySelectorAll('#clientePanel .panel-content').forEach(p => p.classList.remove('active'));
+            document.getElementById(`tab${tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)}`).classList.add('active');
+            if(tab.dataset.tab === 'misPedidos') loadClientActiveOrders();
+            if(tab.dataset.tab === 'historial') loadClientHistory();
+        });
+    });
+    // Tabs moto
+    document.querySelectorAll('#motoTabs .tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('#motoTabs .tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            document.querySelectorAll('#motomandadoPanel .panel-content').forEach(p => p.classList.remove('active'));
+            document.getElementById(`motoTab${tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)}`).classList.add('active');
+        });
+    });
+    // Filtros historial
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = btn.dataset.filter;
+            loadClientHistory();
+        });
+    });
+
     setTimeout(() => initMap(), 100);
 </script>
 </body>
