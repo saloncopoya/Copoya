@@ -1,0 +1,9 @@
+/.well-known/assetlinks.json
+  Content-Type: application/json
+
+/*.well-known/*
+  Content-Type: application/json
+
+/*
+  X-Robots-Tag: noarchive
+  Cache-Control: public, max-age=0, must-revalidate
