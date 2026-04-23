@@ -8,7 +8,7 @@ const FIREBASE_CONFIG = {
 };
 
 const BLOG_BASE_URL = "https://legadoavicola.blogspot.com";
-const DEFAULT_OG_IMAGE = "https://galloslivebadge-default-rtdb.firebaseio.com/default-image.jpg"; // Cambia por una imagen real
+const DEFAULT_OG_IMAGE = "https://res.cloudinary.com/davovja1g/image/upload/v1769121460/tournament-tables/nnskzwln1mxbkiwehxx0.jpg?t=1769121461098"; // Cambia por una imagen real
 
 // ========== DETECCIÓN DE ROBOTS SOCIALES ==========
 function isSocialBot(userAgent) {
