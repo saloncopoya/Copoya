@@ -2,944 +2,837 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
-    <title>Didi Mandaditos Ultra Pro - Responsive</title>
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#00a884">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Legado Avícola - Portal Avícola Profesional</title>
+    
+    <!-- ========== DETECCIÓN DE URLS PARA PWA INSTALADA ========== -->
+<link rel="chrome_url_handler" href="https://prueba-ca5.pages.dev/">
+<meta name="google" content="notranslate">
+
+    <!-- PWA Meta Tags COMPLETAS -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2E7D32">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Legado Avícola">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%232E7D32'/%3E%3Ctext x='50' y='67' font-size='50' text-anchor='middle' fill='white' font-family='Arial'%3E🐔%3C/text%3E%3C/svg%3E">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-touch-fullscreen" content="yes">
+    <meta name="format-detection" content="telephone=no">
     
-    <!-- Leaflet y complementos -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <!-- SEO y redes -->
+    <meta name="description" content="Portal avícola profesional - Guías, manejo y sanidad aviar. Funciona offline.">
+    <meta name="keywords" content="avicultura, gallinas, pollos, veterinaria, granja">
     
-    <!-- Firebase -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
+        <!-- ========== OPEN GRAPH PARA WHATSAPP Y REDES SOCIALES ========== -->
+    <meta property="og:title" content="Legado Avícola - Portal Avícola Profesional">
+    <meta property="og:description" content="Portal avícola profesional - Guías, manejo y sanidad aviar. Funciona offline y con notificaciones push.">
+    <meta property="og:image" content="https://placehold.co/512x512/2E7D32/white?text=🐔">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:url" content="https://prueba-ca5.pages.dev/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Legado Avícola">
+    <meta property="og:locale" content="es_MX">
     
-    <!-- Chart.js y Moment.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <!-- ========== TWITTER CARDS ========== -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Legado Avícola - Portal Avícola Profesional">
+    <meta name="twitter:description" content="Portal avícola profesional - Guías, manejo, sanidad aviar.">
+    <meta name="twitter:image" content="https://placehold.co/512x512/2E7D32/white?text=🐔">
     
-    <!-- Font Awesome y SweetAlert -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+    <!-- ========== WHATSAPP SPECIFIC ========== -->
+    <meta property="og:image:secure_url" content="https://placehold.co/512x512/2E7D32/white?text=🐔">
+    <meta property="og:image:alt" content="Logo Legado Avícola">
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
         }
 
         body {
-            background: #f0f2f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: #ffffff; /* Fondo blanco limpio */
             height: 100vh;
             overflow: hidden;
-            position: fixed;
-            width: 100%;
         }
 
-        /* Pantalla de autenticación */
-        .auth-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, #00a884 0%, #005f45 100%);
-            padding: 20px;
-            overflow-y: auto;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 1000;
-        }
-        .auth-card {
-            background: white;
-            border-radius: 48px;
-            padding: 32px 24px;
+        /* Contenido principal - ocupa toda la pantalla sin bordes */
+        .main-container {
             width: 100%;
-            max-width: 450px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
-            text-align: center;
-        }
-        .auth-card h1 { color: #00a884; font-size: 1.8rem; margin-bottom: 8px; }
-        .auth-card p { color: #6c757d; margin-bottom: 24px; font-size: 0.9rem; }
-        .input-group { margin-bottom: 16px; text-align: left; }
-        .input-group label { font-weight: 600; display: block; margin-bottom: 6px; color: #1e2a32; font-size: 0.85rem; }
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e9ecef;
-            border-radius: 30px;
-            font-size: 0.95rem;
-            background: #f8f9fa;
-        }
-        button {
-            background: #00a884;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 40px;
-            font-weight: bold;
-            font-size: 0.95rem;
-            width: 100%;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        button:hover { background: #008f6e; transform: translateY(-2px); }
-        .toggle-auth { margin-top: 20px; color: #00a884; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
-        
-        /* App principal - LAYOUT RESPONSIVE */
-        .app-main {
-            display: none;
-            flex-direction: column;
-            height: 100vh;
-            width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background: #f8f9fa;
-        }
-        
-        /* Contenedor del mapa con toggle */
-        .map-wrapper {
+            height: 100%;
             position: relative;
-            transition: all 0.3s ease;
             overflow: hidden;
+            background: #ffffff;
         }
-        .map-wrapper.show {
-            flex: 2;
-            min-height: 200px;
-        }
-        .map-wrapper.hide {
-            flex: 0;
-            min-height: 0;
-            height: 0;
-        }
-        .map-container {
-            height: 100%;
-            width: 100%;
-            position: relative;
-        }
-        #map {
-            height: 100%;
-            width: 100%;
-        }
-        
-        /* Botón toggle mapa - flotante */
-        .toggle-map-btn {
+
+        /* Modo Online - Iframe a pantalla completa */
+        .online-mode {
             position: absolute;
-            bottom: 10px;
-            right: 10px;
-            z-index: 1000;
-            background: #00a884;
-            color: white;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.3s;
+            background: #ffffff;
+        }
+
+        .online-mode.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
             border: none;
-            border-radius: 50px;
-            padding: 8px 16px;
-            font-size: 0.75rem;
-            width: auto;
-            margin: 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            display: block;
         }
-        .toggle-map-btn i { font-size: 0.9rem; }
-        
-        /* Panel de información - responsive */
-        .info-panel {
-            background: white;
-            border-radius: 24px 24px 0 0;
-            padding: 12px 16px;
-            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+
+        /* Modo Offline - UI Estática */
+        .offline-mode {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #f5f5f5;
             overflow-y: auto;
-            transition: all 0.3s ease;
+            transition: opacity 0.3s;
+            opacity: 0;
+            pointer-events: none;
         }
-        
-        /* Cuando el mapa está oculto, el panel ocupa más espacio */
-        .map-wrapper.hide + .info-panel {
-            flex: 1;
-            max-height: 100%;
-            border-radius: 0;
+
+        .offline-mode.active {
+            opacity: 1;
+            pointer-events: auto;
         }
-        
-        .user-header {
+
+        /* Navegación offline */
+        .offline-nav {
+            background: #2E7D32;
+            padding: 10px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #f0f2f5;
-            flex-wrap: wrap;
             gap: 8px;
-        }
-        .user-role-badge {
-            background: linear-gradient(135deg, #00a884, #008f6e);
-            color: white;
-            border-radius: 40px;
-            padding: 6px 14px;
-            font-size: 0.75rem;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn-group {
-            display: flex;
-            gap: 6px;
             flex-wrap: wrap;
+            justify-content: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
-        .role-switch-btn, .logout-btn, .config-btn, .notif-btn {
-            padding: 6px 12px;
-            width: auto;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            margin: 0;
-        }
-        .role-switch-btn { background: #6c757d; }
-        .logout-btn { background: #ff6b6b; }
-        .config-btn { background: #17a2b8; }
-        .notif-btn { background: #ffc107; color: #333; position: relative; }
-        #notifCount {
-            background: red;
-            border-radius: 50%;
-            padding: 2px 5px;
-            font-size: 9px;
-            margin-left: 4px;
-        }
-        
-        /* Tabs - scroll horizontal en móvil */
-        .tabs {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 12px;
-            border-bottom: 2px solid #e9ecef;
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: thin;
-            padding-bottom: 2px;
-        }
-        .tab {
-            padding: 8px 14px;
+
+        .offline-nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
             cursor: pointer;
-            border-radius: 20px 20px 0 0;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
             font-weight: 500;
             transition: all 0.2s;
-            display: inline-block;
         }
-        .tab.active { background: #00a884; color: white; }
-        
-        .section-title { 
-            font-size: 0.9rem; 
-            font-weight: bold; 
-            margin: 12px 0 8px 0; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
+
+        .offline-nav-btn.active {
+            background: #ffc107;
+            color: #1b5e20;
         }
-        .selected-location {
-            background: #e8f5e9;
-            padding: 10px;
-            border-radius: 14px;
-            margin: 8px 0;
-            font-size: 0.7rem;
-            border-left: 4px solid #00a884;
-            word-break: break-word;
+
+        /* Contenido offline */
+        .offline-content {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
         }
-        .delivery-list, .orders-list {
-            max-height: 200px;
-            overflow-y: auto;
-            gap: 8px;
-            display: flex;
-            flex-direction: column;
-        }
-        .delivery-item, .order-item {
-            background: #f8f9fa;
+
+        .article-card {
+            background: white;
             border-radius: 16px;
-            padding: 10px;
-            border: 1px solid #e9ecef;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
-        .delivery-item { font-size: 0.75rem; }
-        .order-item { font-size: 0.75rem; }
-        
-        .accept-btn, .cancel-order-btn, .complete-btn, .detail-btn {
-            padding: 5px 12px;
-            width: auto;
-            font-size: 0.65rem;
-            margin-top: 6px;
-            margin-right: 5px;
-            display: inline-block;
-        }
-        .cancel-order-btn { background: #dc3545; }
-        .complete-btn { background: #28a745; }
-        .detail-btn { background: #17a2b8; }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 2px 8px;
-            border-radius: 20px;
-            font-size: 0.65rem;
-            font-weight: bold;
-        }
-        .status-pendiente { background: #ffc107; color: #000; }
-        .status-aceptado { background: #00a884; color: white; }
-        .status-enCamino { background: #17a2b8; color: white; }
-        .status-entregado { background: #28a745; color: white; }
-        .status-cancelado { background: #dc3545; color: white; }
-        
-        .info-card { 
-            background: #f0f7ff; 
-            border-radius: 14px; 
-            padding: 8px; 
-            margin: 8px 0; 
-            font-size: 0.7rem; 
-            border-left: 4px solid #00a884;
-        }
-        .driver-info { background: #fff3e0; border-left-color: #ff9800; }
-        
-        .history-item, .config-item {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 8px;
-            margin-bottom: 6px;
-            font-size: 0.7rem;
-        }
-        
-        .filter-buttons {
-            display: flex;
-            gap: 6px;
+
+        .article-card h3 {
+            color: #2E7D32;
             margin-bottom: 10px;
-            flex-wrap: wrap;
         }
-        .filter-btn {
-            background: #e9ecef;
+
+        .article-card p {
             color: #333;
-            padding: 4px 12px;
-            font-size: 0.65rem;
-            width: auto;
-            margin: 0;
+            line-height: 1.5;
         }
-        .filter-btn.active { background: #00a884; color: white; }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin: 10px 0;
+
+        .tag {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #2E7D32;
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            margin-top: 10px;
         }
-        .stat-card {
-            background: linear-gradient(135deg, #f8f9fa, white);
-            padding: 10px;
-            border-radius: 16px;
-            text-align: center;
-            border: 1px solid #e9ecef;
+
+        .emergency-box {
+            background: #ffeb3b;
+            border-left: 5px solid #f44336;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
         }
-        .stat-number { font-size: 1.2rem; font-weight: bold; color: #00a884; }
-        
-        .chat-container { max-height: 120px; overflow-y: auto; background: #f8f9fa; border-radius: 14px; padding: 8px; margin-top: 8px; }
-        .chat-input { display: flex; gap: 6px; margin-top: 6px; }
-        .chat-input input { flex: 1; padding: 8px 12px; border-radius: 30px; border: 1px solid #ddd; font-size: 0.75rem; }
-        .chat-input button { width: auto; padding: 8px 16px; margin: 0; font-size: 0.7rem; }
-        
-        .modal {
-            display: none;
+
+        .connection-status {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            z-index: 100;
+        }
+
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #2E7D32;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        /* ========== OVERLAY ESTILO GOOGLE MATERIAL DESIGN ========== */
+        .install-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            justify-content: center;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 20000;
+            display: flex;
             align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            animation: fadeIn 0.3s ease-out;
+            font-family: 'Google Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        .modal-content {
+        
+        .install-card {
             background: white;
             border-radius: 28px;
-            padding: 20px;
-            max-width: 90%;
-            width: 400px;
-            max-height: 80%;
-            overflow-y: auto;
-        }
-        .close-modal { float: right; cursor: pointer; font-size: 22px; }
-        
-        /* Inputs responsivos */
-        textarea, input[type="text"], input[type="email"], input[type="password"], select {
-            font-size: 16px !important; /* Previene zoom en iOS */
+            padding: 0;
+            text-align: center;
+            max-width: 320px;
+            width: 85%;
+            margin: 20px;
+            box-shadow: 0 24px 38px rgba(0, 0, 0, 0.2), 0 9px 12px rgba(0, 0, 0, 0.1);
+            animation: slideUp 0.3s ease-out;
+            overflow: hidden;
         }
         
-        /* Media Queries */
-        @media (min-width: 768px) {
-            .app-main {
-                flex-direction: row;
-                flex-wrap: wrap;
-            }
-            .map-wrapper {
-                flex: 2;
-                height: 100vh;
-            }
-            .info-panel {
-                width: 380px;
-                max-height: 100vh;
-                border-radius: 0;
-                flex: none;
-            }
-            .toggle-map-btn {
-                bottom: 20px;
-                right: 400px;
-            }
-            .map-wrapper.hide + .info-panel {
-                width: 100%;
-            }
+        .install-header {
+            background: linear-gradient(135deg, #1e8e3e 0%, #2E7D32 100%);
+            padding: 32px 24px 24px 24px;
         }
         
-        @media (max-width: 480px) {
-            .info-panel { padding: 10px 12px; }
-            .user-header { flex-direction: column; align-items: stretch; }
-            .btn-group { justify-content: flex-end; }
-            .tab { padding: 6px 10px; font-size: 0.7rem; }
-            .section-title { font-size: 0.85rem; }
-            .delivery-list, .orders-list { max-height: 160px; }
+        .install-icon {
+            font-size: 56px;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
         }
         
-        @media (max-width: 360px) {
-            .tab { padding: 5px 8px; font-size: 0.65rem; }
-            .role-switch-btn, .logout-btn, .config-btn, .notif-btn { padding: 4px 8px; font-size: 0.6rem; }
+        .install-header h2 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 500;
+            margin: 0 0 8px 0;
+            letter-spacing: -0.3px;
         }
         
-        i { margin-right: 4px; }
-        .flex-between { display: flex; justify-content: space-between; align-items: center; }
-        .mt-2 { margin-top: 8px; }
+        .install-header p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.85rem;
+            margin: 0;
+            line-height: 1.4;
+        }
+        
+        .install-body {
+            padding: 24px 20px 20px 20px;
+            background: white;
+        }
+        
+        .feature-list {
+            text-align: left;
+            margin-bottom: 24px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            color: #202124;
+            font-size: 0.85rem;
+        }
+        
+        .feature-icon {
+            font-size: 20px;
+            min-width: 28px;
+        }
+        
+        .feature-text {
+            flex: 1;
+        }
+        
+        .install-button {
+            background: #1e8e3e;
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 40px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 12px;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        
+        .install-button:hover {
+            background: #2E7D32;
+            transform: scale(1.02);
+        }
+        
+        .install-button:active {
+            transform: scale(0.98);
+        }
+        
+        .later-link {
+            background: none;
+            border: none;
+            color: #5f6368;
+            font-size: 0.8rem;
+            cursor: pointer;
+            padding: 8px;
+            width: 100%;
+            font-family: inherit;
+        }
+        
+        .later-link:hover {
+            color: #202124;
+        }
+        
+        .divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 16px 0;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; backdrop-filter: blur(0px); }
+            to { opacity: 1; backdrop-filter: blur(4px); }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 600px) {
+            .offline-nav-btn { padding: 6px 12px; font-size: 0.7rem; }
+            .article-card { padding: 15px; }
+            .install-card { width: 90%; }
+            .install-header { padding: 24px 20px 20px 20px; }
+            .install-body { padding: 20px 16px 16px 16px; }
+        }
     </style>
 </head>
 <body>
-
-<div id="authScreen" class="auth-container">
-    <div class="auth-card">
-        <i class="fas fa-motorcycle" style="font-size: 50px; color: #00a884; margin-bottom: 16px;"></i>
-        <h1>Didi Mandaditos</h1>
-        <p>Envíos rápidos · Rastreo en vivo</p>
-        <div>
-            <div class="input-group"><label><i class="fas fa-envelope"></i> Correo</label><input type="email" id="emailInput" placeholder="tu@email.com"></div>
-            <div class="input-group"><label><i class="fas fa-lock"></i> Contraseña</label><input type="password" id="passwordInput" placeholder="******"></div>
-            <div class="input-group"><label><i class="fas fa-user-tag"></i> Rol</label><select id="roleSelect"><option value="cliente">👤 Cliente</option><option value="motomandado">🛵 Motomandado</option><option value="admin">👑 Administrador</option></select></div>
-            <button id="loginBtn"><i class="fas fa-sign-in-alt"></i> Ingresar / Registrarse</button>
+    <div class="main-container">
+        <!-- Modo Online -->
+        <div id="onlineMode" class="online-mode">
+            <div id="iframeLoader" class="loader"></div>
+            <iframe id="blogFrame" src="https://legadoavicola.blogspot.com" title="Legado Avícola Blog"></iframe>
         </div>
-        <div id="authMessage" style="margin-top: 16px; color: #dc3545; font-size: 0.75rem;"></div>
+
+        <!-- Modo Offline - UI Estática Completa -->
+        <div id="offlineMode" class="offline-mode">
+            <div class="offline-nav">
+                <button class="offline-nav-btn active" data-section="inicio">🏠 Inicio</button>
+                <button class="offline-nav-btn" data-section="guias">📖 Guías</button>
+                <button class="offline-nav-btn" data-section="sanidad">💊 Sanidad</button>
+                <button class="offline-nav-btn" data-section="alimentacion">🍽️ Alimentación</button>
+                <button class="offline-nav-btn" data-section="emergencia">🚨 Emergencia</button>
+            </div>
+            <div id="offlineContent" class="offline-content">
+                <!-- Contenido dinámico offline -->
+            </div>
+        </div>
     </div>
-</div>
 
-<div id="appMain" class="app-main">
-    <div class="map-wrapper show" id="mapWrapper">
-        <div class="map-container"><div id="map"></div></div>
-        <button id="toggleMapBtn" class="toggle-map-btn"><i class="fas fa-map"></i> <span id="toggleMapText">Ocultar mapa</span></button>
-    </div>
-    <div class="info-panel">
-        <div class="user-header">
-            <div class="user-role-badge" id="roleBadge"><i class="fas fa-user"></i> Cargando...</div>
-            <div class="btn-group">
-                <button id="notifBtn" class="notif-btn"><i class="fas fa-bell"></i> Notif <span id="notifCount">0</span></button>
-                <button id="switchRoleBtn" class="role-switch-btn"><i class="fas fa-exchange-alt"></i> Rol</button>
-                <button id="configMainBtn" class="config-btn"><i class="fas fa-cog"></i> Config</button>
-                <button id="logoutMainBtn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Salir</button>
-            </div>
-        </div>
+    <div class="connection-status" id="connStatusText">🟢 Online</div>
 
-        <!-- CLIENTE TABS -->
-        <div id="clienteTabs" class="tabs">
-            <div class="tab active" data-tab="nuevo">📦 Nuevo</div>
-            <div class="tab" data-tab="misPedidos">📋 Mis Pedidos (<span id="activeOrdersCount">0</span>)</div>
-            <div class="tab" data-tab="historial">📜 Historial</div>
-            <div class="tab" data-tab="favoritos">⭐ Favoritos</div>
-            <div class="tab" data-tab="soporte">💬 Soporte</div>
-        </div>
-        <div id="clientePanel">
-            <div id="tabNuevo" class="panel-content active">
-                <div class="section-title"><i class="fas fa-map-marker-alt"></i> Selecciona destino en el mapa</div>
-                <div class="selected-location" id="selectedLocationDisplay"><i class="fas fa-info-circle"></i> Haz clic en el mapa</div>
-                <textarea id="descripcionMandado" rows="2" placeholder="📝 Descripción del paquete" style="width:100%; padding:10px; border-radius:14px; border:2px solid #e9ecef; margin-bottom:8px;"></textarea>
-                <input type="text" id="precioEstimado" placeholder="💰 Pago sugerido (MXN)" style="width:100%; padding:10px; border-radius:14px; border:2px solid #e9ecef; margin-bottom:8px;">
-                <input type="text" id="telefonoDestino" placeholder="📞 Teléfono destinatario" style="width:100%; padding:10px; border-radius:14px; border:2px solid #e9ecef; margin-bottom:8px;">
-                <input type="text" id="nombreDestino" placeholder="👤 Nombre destinatario" style="width:100%; padding:10px; border-radius:14px; border:2px solid #e9ecef; margin-bottom:8px;">
-                <select id="tipoPaquete" style="width:100%; padding:10px; border-radius:14px; border:2px solid #e9ecef; margin-bottom:8px;">
-                    <option value="pequeño">📦 Pequeño (hasta 1kg)</option>
-                    <option value="mediano">📦 Mediano (1-5kg)</option>
-                    <option value="grande">📦 Grande (5-15kg)</option>
-                </select>
-                <button id="solicitarMandadoBtn"><i class="fas fa-paper-plane"></i> Solicitar Mandado</button>
-            </div>
-            <div id="tabMisPedidos" class="panel-content">
-                <div class="section-title">Mis pedidos activos</div>
-                <div id="activeOrdersList" class="orders-list">Cargando...</div>
-            </div>
-            <div id="tabHistorial" class="panel-content">
-                <div class="filter-buttons">
-                    <button class="filter-btn active" data-filter="todos">Todos</button>
-                    <button class="filter-btn" data-filter="entregado">Entregados</button>
-                    <button class="filter-btn" data-filter="cancelado">Cancelados</button>
+    <script>
+        // ========== INSTALACIÓN PWA CON OVERLAY GOOGLE DESIGN ==========
+        
+        let deferredPrompt = null;
+        let overlayShown = false;
+        
+        function isPWAInstalled() {
+            const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                                 window.navigator.standalone === true;
+            return isStandalone;
+        }
+        
+        // Escuchar el evento beforeinstallprompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Si el PWA NO está instalado y NO se ha mostrado el overlay
+            if (!isPWAInstalled() && !overlayShown) {
+                overlayShown = true;
+                showInstallOverlay();
+            }
+        });
+        
+        function showInstallOverlay() {
+            // Detectar sistema operativo
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            const isAndroid = /Android/i.test(navigator.userAgent);
+            
+            let installText = "Instalar App";
+            let features = [
+                { icon: "⚡", text: "Acceso instantáneo desde tu pantalla de inicio" },
+                { icon: "📡", text: "Funciona sin conexión a internet" },
+                { icon: "🔔", text: "Recibe notificaciones importantes" },
+                { icon: "🚀", text: "Experiencia más rápida y fluida" }
+            ];
+            
+            if (isIOS) {
+                installText = "Agregar a pantalla de inicio";
+            } else if (isAndroid) {
+                installText = "Instalar App";
+            }
+            
+            // Crear overlay con diseño Google Material
+            const overlay = document.createElement('div');
+            overlay.className = 'install-overlay';
+            overlay.innerHTML = `
+                <div class="install-card">
+                    <div class="install-header">
+                        <div class="install-icon">🐔📱</div>
+                        <h2>Legado Avícola</h2>
+                        <p>Instala nuestra app para una mejor experiencia</p>
+                    </div>
+                    <div class="install-body">
+                        <div class="feature-list">
+                            ${features.map(f => `
+                                <div class="feature-item">
+                                    <span class="feature-icon">${f.icon}</span>
+                                    <span class="feature-text">${f.text}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <button class="install-button" id="installNowBtn">${installText}</button>
+                        <button class="later-link" id="laterBtn">Ahora no</button>
+                    </div>
                 </div>
-                <div id="historialCliente" style="max-height: 200px; overflow-y: auto;"></div>
-            </div>
-            <div id="tabFavoritos" class="panel-content">
-                <div class="section-title">Direcciones favoritas</div>
-                <div id="favoritosList"></div>
-                <button id="addFavoritoBtn" style="margin-top:8px;"><i class="fas fa-plus"></i> Guardar actual</button>
-            </div>
-            <div id="tabSoporte" class="panel-content">
-                <div class="section-title">Centro de ayuda</div>
-                <div class="info-card"><i class="fas fa-headset"></i> soporte@didimandados.com</div>
-                <div id="soporteChat" class="chat-container"></div>
-                <div class="chat-input"><input type="text" id="soporteMsg" placeholder="Escribe..."><button id="sendSoporteBtn">Enviar</button></div>
-            </div>
-        </div>
-
-        <!-- MOTO TABS -->
-        <div id="motoTabs" class="tabs" style="display:none;">
-            <div class="tab active" data-tab="disponibles">🆓 Disponibles (<span id="availableCount">0</span>)</div>
-            <div class="tab" data-tab="misEntregas">🛵 Mis Entregas (<span id="myDeliveriesCount">0</span>)</div>
-            <div class="tab" data-tab="estadisticas">📊 Estadísticas</div>
-            <div class="tab" data-tab="historialMoto">📜 Historial</div>
-        </div>
-        <div id="motomandadoPanel" style="display:none;">
-            <div id="motoTabDisponibles" class="panel-content active">
-                <div id="availableOrdersList" class="delivery-list">Cargando...</div>
-            </div>
-            <div id="motoTabMisEntregas" class="panel-content">
-                <div id="myAssignedDeliveries" class="delivery-list"></div>
-            </div>
-            <div id="motoTabEstadisticas" class="panel-content">
-                <div class="stats-grid" id="statsGrid"></div>
-                <canvas id="earningsChart" style="height:120px; margin:10px 0;"></canvas>
-                <div id="statsMoto"></div>
-            </div>
-            <div id="motoTabHistorialMoto" class="panel-content">
-                <div id="motoHistoryList" class="delivery-list"></div>
-            </div>
-        </div>
-
-        <!-- ADMIN TABS -->
-        <div id="adminTabs" class="tabs" style="display:none;">
-            <div class="tab active" data-tab="dashboard">📊 Dashboard</div>
-            <div class="tab" data-tab="usuarios">👥 Usuarios</div>
-            <div class="tab" data-tab="pedidosAdmin">📦 Pedidos</div>
-        </div>
-        <div id="adminPanel" style="display:none;">
-            <div id="adminTabDashboard" class="panel-content active">
-                <div class="stats-grid" id="adminStats"></div>
-                <canvas id="adminChart" style="height:120px;"></canvas>
-            </div>
-            <div id="adminTabUsuarios" class="panel-content"><div id="usersList" class="delivery-list"></div></div>
-            <div id="adminTabPedidosAdmin" class="panel-content"><div id="allOrdersList" class="delivery-list"></div></div>
-        </div>
-
-        <!-- Configuración -->
-        <div id="configPanel" style="display:none;">
-            <div class="section-title"><i class="fas fa-cog"></i> Configuración</div>
-            <div class="config-item"><strong>Usuario:</strong> <span id="configUserEmail"></span></div>
-            <div class="config-item"><strong>Rol:</strong> <span id="configCurrentRole"></span></div>
-            <div class="config-item"><strong>Miembro desde:</strong> <span id="memberSince"></span></div>
-            <div class="config-item"><button id="clearCacheBtn" style="background:#6c757d; padding:8px;"><i class="fas fa-broom"></i> Limpiar caché</button></div>
-            <div class="config-item"><button id="exportDataBtn" style="background:#17a2b8; padding:8px;"><i class="fas fa-download"></i> Exportar datos</button></div>
-        </div>
-    </div>
-</div>
-
-<div id="orderDetailModal" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeModal()">&times;</span>
-        <h3 id="modalTitle">Detalles</h3>
-        <div id="modalBody"></div>
-    </div>
-</div>
-
-<script>
-    // Configuración Firebase
-    const firebaseConfig = {
-        apiKey: "AIzaSyASox7mRak5V0py29htEVWCVeipGpA0yfs",
-        authDomain: "galloslivebadge.firebaseapp.com",
-        databaseURL: "https://galloslivebadge-default-rtdb.firebaseio.com",
-        projectId: "galloslivebadge",
-        storageBucket: "galloslivebadge.firebasestorage.app",
-        messagingSenderId: "979482928760",
-        appId: "1:979482928760:web:3ea879dc4ee1e020df6f8d"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-
-    let currentUser = null, currentRole = null, map = null, userMarker = null, watchPositionId = null;
-    let selectedDestCoords = null, selectedDestAddress = "";
-    let activeOrders = new Map(), motoActiveDeliveries = new Map();
-    let earningsChart = null, adminChart = null;
-    let notificaciones = [], favoritos = [];
-    let currentFilter = "todos";
-    let mapVisible = true;
-
-    const TUXTLA = [16.7549, -93.1149];
-
-    function saveCache(key, data) { localStorage.setItem(`dm_${key}`, JSON.stringify({ data, t: Date.now() })); }
-    function getCache(key, maxAge=60000) { const item = localStorage.getItem(`dm_${key}`); if(!item) return null; const parsed = JSON.parse(item); if(Date.now()-parsed.t > maxAge) return null; return parsed.data; }
-
-    function showNotification(title, message, type="info") {
-        Swal.fire({ title, text: message, icon: type, toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
-        notificaciones.unshift({ title, message, time: Date.now() });
-        saveCache(`notif_${currentUser?.uid}`, notificaciones.slice(0,20));
-        document.getElementById('notifCount').innerText = notificaciones.length;
-    }
-
-    // Toggle mapa
-    function toggleMap() {
-        const wrapper = document.getElementById('mapWrapper');
-        const btnText = document.getElementById('toggleMapText');
-        if (mapVisible) {
-            wrapper.classList.remove('show');
-            wrapper.classList.add('hide');
-            btnText.innerText = 'Mostrar mapa';
-            mapVisible = false;
-            if (map) setTimeout(() => map.invalidateSize(), 100);
-        } else {
-            wrapper.classList.remove('hide');
-            wrapper.classList.add('show');
-            btnText.innerText = 'Ocultar mapa';
-            mapVisible = true;
-            setTimeout(() => map.invalidateSize(), 100);
+            `;
+            
+            document.body.appendChild(overlay);
+            
+            // Evento para instalar
+            const installNowBtn = document.getElementById('installNowBtn');
+            const laterBtn = document.getElementById('laterBtn');
+            
+            if (installNowBtn) {
+                installNowBtn.addEventListener('click', () => {
+                    if (deferredPrompt) {
+                        deferredPrompt.prompt();
+                        deferredPrompt.userChoice.then((choiceResult) => {
+                            if (choiceResult.outcome === 'accepted') {
+                                console.log('Usuario instaló la app');
+                            }
+                            deferredPrompt = null;
+                        });
+                    } else {
+                        // Para iOS o navegadores que no soportan beforeinstallprompt
+                        alert('Para instalar, toca el botón compartir y selecciona "Agregar a pantalla de inicio"');
+                    }
+                    overlay.remove();
+                });
+            }
+            
+            if (laterBtn) {
+                laterBtn.addEventListener('click', () => {
+                    overlay.remove();
+                });
+            }
+            
+            // También cerrar al hacer click fuera (opcional)
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    overlay.remove();
+                }
+            });
         }
-    }
+        
+        // Si ya está instalado, no hacer nada
+        if (isPWAInstalled()) {
+            console.log('✅ PWA ya instalada, no mostrar overlay');
+        }
+        
+        // ========== SISTEMA DE URL PERSONALIZADA (SENIOR) ==========
+        // Detecta cualquier parámetro en la URL y lo transfiere al blog
+        
+        const BLOG_BASE_URL = 'https://legadoavicola.blogspot.com';
+        
+        // Función para obtener todos los parámetros de la URL actual
+        function getCurrentUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            const paramObj = {};
+            for (const [key, value] of params.entries()) {
+                paramObj[key] = value;
+            }
+            return paramObj;
+        }
+        
+        // Función para construir la URL del blog con los mismos parámetros
+        function buildBlogUrlWithParams() {
+            const params = getCurrentUrlParams();
+            const paramKeys = Object.keys(params);
+            
+            // Si no hay parámetros, retornar la URL base
+            if (paramKeys.length === 0) {
+                return BLOG_BASE_URL;
+            }
+            
+            // Construir URL con parámetros
+            const urlParams = new URLSearchParams();
+            for (const [key, value] of Object.entries(params)) {
+                urlParams.append(key, value);
+            }
+            
+            return `${BLOG_BASE_URL}?${urlParams.toString()}`;
+        }
+        
+        // Función principal para redirigir el iframe según los parámetros de URL
+        function redirectIframeToUrlParams() {
+            const targetUrl = buildBlogUrlWithParams();
+            const iframe = document.getElementById('blogFrame');
+            const currentSrc = iframe.src.split('?')[0]; // Ignorar parámetros actuales
+            
+            // Solo redirigir si es necesario
+            if (currentSrc !== BLOG_BASE_URL || targetUrl !== BLOG_BASE_URL) {
+                console.log(`🔄 Redirigiendo iframe a: ${targetUrl}`);
+                iframe.src = targetUrl;
+                return true;
+            }
+            return false;
+        }
+        
+        // ========== DATOS OFFLINE COMPLETOS ==========
+        const offlineData = {
+            inicio: {
+                title: "Bienvenido a Legado Avícola",
+                content: `
+                    <div class="article-card">
+                        <h3>🐔 Portal Avícola Profesional</h3>
+                        <p>Estás viendo la versión offline de Legado Avícola. Cuando recuperes conexión a internet, se cargará automáticamente el blog completo con todas las actualizaciones.</p>
+                        <p style="margin-top: 10px;">Mientras tanto, aquí encontrarás información esencial para el manejo de aves.</p>
+                        <span class="tag">📱 Modo offline</span>
+                    </div>
+                    <div class="article-card">
+                        <h3>📊 Datos de la industria avícola 2024</h3>
+                        <p>La producción avícola en Latinoamérica creció un 8% este año. La demanda de huevo y pollo se mantiene como la proteína animal más accesible.</p>
+                        <span class="tag">📈 Estadísticas</span>
+                    </div>
+                    <div class="article-card">
+                        <h3>✅ Tips rápidos</h3>
+                        <p>✓ Mantén la cama seca y ventilada<br>✓ Agua fresca siempre disponible<br>✓ Revisa el consumo diario de alimento<br>✓ Aisla aves enfermas inmediatamente</p>
+                        <span class="tag">💡 Recomendaciones</span>
+                    </div>
+                `
+            },
+            guias: {
+                title: "Guías Avícolas",
+                content: `
+                    <div class="article-card">
+                        <h3>📘 Manejo de pollos de engorde</h3>
+                        <p><strong>Fase 1 (0-14 días):</strong> Temperatura 32-35°C, alimento iniciador 22% proteína.<br>
+                        <strong>Fase 2 (15-28 días):</strong> Temperatura 26-30°C, alimento crecimiento 20% proteína.<br>
+                        <strong>Fase 3 (29-42 días):</strong> Temperatura 22-24°C, alimento finalizador 18% proteína.</p>
+                        <span class="tag">🐔 Engorde</span>
+                    </div>
+                    <div class="article-card">
+                        <h3>🥚 Producción de huevo comercial</h3>
+                        <p>Gallinas ponedoras requieren 16 horas de luz diaria, calcio suplementario (3.5-4%) y agua ad libitum. Producción óptima: 280-300 huevos/año.</p>
+                        <span class="tag">🥚 Postura</span>
+                    </div>
+                    <div class="article-card">
+                        <h3>🐣 Incubación artificial</h3>
+                        <p>Temperatura: 37.5°C, Humedad: 55-60% (días 1-18), 65-70% (días 19-21). Volteo cada 2 horas hasta día 18.</p>
+                        <span class="tag">🥚 Incubación</span>
+                    </div>
+                `
+            },
+            sanidad: {
+                title: "Sanidad y Enfermedades",
+                content: `
+                    <div class="article-card">
+                        <h3>💊 Calendario de vacunación básico</h3>
+                        <p>• Día 1: Marek (in ovo o subcutáneo)<br>
+                        • Día 7-10: Newcastle + Bronquitis (ocular o agua)<br>
+                        • Día 14-18: Gumboro (agua)<br>
+                        • Día 21-24: Newcastle + Bronquitis (refuerzo)</p>
+                        <span class="tag">💉 Vacunas</span>
+                    </div>
+                    <div class="article-card">
+                        <h3>⚠️ Signos de alarma</h3>
+                        <p>• Depresión, plumas erizadas<br>
+                        • Diarrea verdosa o sanguinolenta<br>
+                        • Estornudos, secreción nasal<br>
+                        • Baja producción de huevo<br>
+                        • Muerte súbita</p>
+                        <span class="tag">🚨 Síntomas</span>
+                    </div>
+                    <div class="article-card">
+                        <h3>🧴 Bioseguridad básica</h3>
+                        <p>Pediluvios a la entrada, cambio de ropa, limpieza diaria de comederos y bebederos, cuarentena de aves nuevas por 21 días.</p>
+                        <span class="tag">🧼 Prevención</span>
+                    </div>
+                `
+            },
+            alimentacion: {
+                title: "Nutrición y Alimentación",
+                content: `
+                    <div class="article-card">
+                        <h3>🍽️ Tabla de requerimientos nutricionales</h3>
+                        <p><strong>Inicio (0-6 sem):</strong> 22-24% PC, 2950-3050 kcal/kg<br>
+                        <strong>Crecimiento (6-12 sem):</strong> 18-20% PC, 2900-3000 kcal/kg<br>
+                        <strong>Postura:</strong> 16-18% PC, 2700-2800 kcal/kg, 3.5% Calcio</p>
+                        <span class="tag">📊 Nutrientes</span>
+                    </div>
+                    <div class="article-card">
+                        <h3>🌿 Alimentos alternativos</h3>
+                        <p>Harina de pescado, torta de soya, sorgo, harina de plumas, maíz, salvado de trigo. Suplementar con aminoácidos esenciales (metionina, lisina).</p>
+                        <span class="tag">🌽 Ingredientes</span>
+                    </div>
+                    <div class="article-card">
+                        <h3>💧 Agua: el nutriente olvidado</h3>
+                        <p>Las aves consumen 2x más agua que alimento. Mantener bebederos limpios, pH 6.5-7.5, cloración a 3-5 ppm.</p>
+                        <span class="tag">💧 Calidad de agua</span>
+                    </div>
+                `
+            },
+            emergencia: {
+                title: "Emergencias Avícolas",
+                content: `
+                    <div class="emergency-box">
+                        <h3>🚨 ¡CONTACTO DE EMERGENCIA!</h3>
+                        <p>📞 Veterinario de guardia: <strong>+52 55 1234 5678</strong><br>
+                        📞 SENASICA (México): <strong>800 751 2100</strong><br>
+                        📞 USDA (EE.UU.): <strong>1-866-536-7593</strong></p>
+                    </div>
+                    <div class="article-card">
+                        <h3>🔥 Golpe de calor</h3>
+                        <p>Síntomas: jadeo, alas separadas, convulsiones. Acción: nebulizar con agua fría, aumentar ventilación, electrolitos en agua.</p>
+                        <span class="tag">🌡️ Urgencia</span>
+                    </div>
+                    <div class="article-card">
+                        <h3>🩸 Hemorragias o trauma</h3>
+                        <p>Aplicar presión directa con gasa estéril, aislar al ave en lugar tranquilo, administrar vitamina K si está disponible. Trasladar al veterinario.</p>
+                        <span class="tag">🩹 Primeros auxilios</span>
+                    </div>
+                    <div class="article-card">
+                        <h3>📋 Kit de emergencia recomendado</h3>
+                        <p>• Antisépticos (yodo, clorhexidina)<br>
+                        • Vendas y gasas<br>
+                        • Vitaminas/electrolitos<br>
+                        • Termómetro<br>
+                        • Antibiótico de amplio espectro (bajo prescripción)</p>
+                        <span class="tag">🎒 Equipo</span>
+                    </div>
+                `
+            }
+        };
 
-    // Inicializar mapa
-    function initMap() {
-        if(map) return;
-        map = L.map('map').setView(TUXTLA, 13);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', { attribution: '© OpenStreetMap', subdomains: 'abcd' }).addTo(map);
+        // Elementos DOM
+        const onlineMode = document.getElementById('onlineMode');
+        const offlineMode = document.getElementById('offlineMode');
+        const iframe = document.getElementById('blogFrame');
+        const iframeLoader = document.getElementById('iframeLoader');
+        const connStatusSpan = document.getElementById('connStatusText');
         
-        const geocoder = L.Control.geocoder({ defaultMarkGeocode: false, placeholder: 'Buscar destino...' }).on('markgeocode', function(e) {
-            if(currentRole !== 'cliente') return;
-            selectedDestCoords = { lat: e.geocode.center.lat, lng: e.geocode.center.lng };
-            selectedDestAddress = e.geocode.name;
-            if(window.destMarker) map.removeLayer(window.destMarker);
-            window.destMarker = L.marker([e.geocode.center.lat, e.geocode.center.lng], { 
-                icon: L.divIcon({ html: '<i class="fas fa-map-pin" style="font-size:28px;color:#ff4444;"></i>', iconSize: [28,28] }) 
-            }).addTo(map);
-            document.getElementById('selectedLocationDisplay').innerHTML = `<i class="fas fa-check-circle"></i> Destino: ${selectedDestAddress.substring(0,60)}`;
-            map.setView(e.geocode.center, 16);
-        }).addTo(map);
+        let isOnline = navigator.onLine;
+        let swRegistration = null;
+
+        // Cambiar entre modo online/offline
+        function setMode(online) {
+            isOnline = online;
+            
+            if (online) {
+                onlineMode.classList.remove('hidden');
+                offlineMode.classList.remove('active');
+                connStatusSpan.innerHTML = '🟢 Online';
+                // Aplicar redirección por URL personalizada al volver online
+                redirectIframeToUrlParams();
+            } else {
+                onlineMode.classList.add('hidden');
+                offlineMode.classList.add('active');
+                connStatusSpan.innerHTML = '🔴 Offline';
+                
+                // Cargar sección offline según los parámetros de URL
+                const params = getCurrentUrlParams();
+                let sectionToLoad = 'inicio';
+                
+                if (params.section) {
+                    const sectionMap = {
+                        'guias': 'guias',
+                        'sanidad': 'sanidad',
+                        'alimentacion': 'alimentacion',
+                        'emergencia': 'emergencia'
+                    };
+                    sectionToLoad = sectionMap[params.section] || 'inicio';
+                }
+                
+                loadOfflineSection(sectionToLoad);
+            }
+        }
+
+        // Cargar sección offline
+        function loadOfflineSection(sectionId) {
+            const data = offlineData[sectionId];
+            if (data) {
+                document.getElementById('offlineContent').innerHTML = data.content;
+                // Actualizar active en navegación
+                document.querySelectorAll('.offline-nav-btn').forEach(btn => {
+                    if (btn.dataset.section === sectionId) {
+                        btn.classList.add('active');
+                    } else {
+                        btn.classList.remove('active');
+                    }
+                });
+            }
+        }
+
+        // Detectar cambios de conexión
+        window.addEventListener('online', () => {
+            setMode(true);
+            showToast("🌐 Conexión restaurada - Cargando blog...", 3000);
+        });
         
-        map.on('click', async (e) => {
-            if(currentRole !== 'cliente') return;
-            if(window.destMarker) map.removeLayer(window.destMarker);
-            selectedDestCoords = { lat: e.latlng.lat, lng: e.latlng.lng };
+        window.addEventListener('offline', () => {
+            setMode(false);
+            showToast("📡 Sin internet - Usando contenido offline", 3000);
+        });
+
+        // Iframe load event
+        iframe.addEventListener('load', () => {
+            iframeLoader.style.display = 'none';
+        });
+
+        iframe.addEventListener('error', () => {
+            iframeLoader.style.display = 'none';
+            if (!navigator.onLine) {
+                setMode(false);
+            }
+        });
+
+        // Service Worker Registration
+        async function registerSW() {
+            if (!('serviceWorker' in navigator)) return;
+            
             try {
-                const resp = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
-                const data = await resp.json();
-                selectedDestAddress = data.display_name || `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
-            } catch(err) { selectedDestAddress = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`; }
-            window.destMarker = L.marker([e.latlng.lat, e.latlng.lng], { 
-                icon: L.divIcon({ html: '<i class="fas fa-map-pin" style="font-size:28px;color:#ff4444;"></i>', iconSize: [28,28] }) 
-            }).addTo(map);
-            document.getElementById('selectedLocationDisplay').innerHTML = `<i class="fas fa-check-circle"></i> Destino: ${selectedDestAddress.substring(0,60)}`;
-        });
-    }
-
-    async function getPosition() {
-        return new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000 }));
-    }
-
-    async function updateLocation() {
-        if(!currentUser) return;
-        try {
-            const pos = await getPosition();
-            const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude, timestamp: Date.now() };
-            await db.ref(`users/${currentUser.uid}/location`).set(loc);
-            if(!userMarker) userMarker = L.marker([loc.lat, loc.lng], { title: 'Mi ubicación' }).addTo(map);
-            else userMarker.setLatLng([loc.lat, loc.lng]);
-            if(mapVisible) map.setView([loc.lat, loc.lng], 15);
-        } catch(e) { console.warn(e); }
-    }
-
-    function startTracking() {
-        if(watchPositionId) navigator.geolocation.clearWatch(watchPositionId);
-        watchPositionId = navigator.geolocation.watchPosition(async (pos) => {
-            if(!currentUser) return;
-            const loc = { lat: pos.coords.latitude, lng: pos.coords.longitude, timestamp: Date.now() };
-            await db.ref(`users/${currentUser.uid}/location`).set(loc);
-            if(userMarker) userMarker.setLatLng([loc.lat, loc.lng]);
-            if(currentRole === 'motomandado') {
-                for(let [orderId, order] of motoActiveDeliveries) {
-                    await db.ref(`orders/${orderId}/driverLocation`).set(loc);
-                }
+                const registration = await navigator.serviceWorker.register('/sw.js', { scope: '/' });
+                console.log('SW registrado:', registration);
+                swRegistration = registration;
+                return registration;
+            } catch (error) {
+                console.error('SW registration failed:', error);
             }
-        }, (err) => console.warn(err), { enableHighAccuracy: true, maximumAge: 5000, timeout: 10000 });
-    }
-
-    // Funciones principales resumidas (igual que antes pero con responsive)
-    async function requestOrder() {
-        if(!currentUser || currentRole !== 'cliente') return Swal.fire('Error', 'Debes ser cliente', 'error');
-        if(!selectedDestCoords) return Swal.fire('Sin destino', 'Selecciona un destino en el mapa', 'warning');
-        const descripcion = document.getElementById('descripcionMandado').value.trim() || "Sin descripción";
-        const pago = document.getElementById('precioEstimado').value.trim() || "A convenir";
-        const telefono = document.getElementById('telefonoDestino').value.trim() || "";
-        const nombreDestino = document.getElementById('nombreDestino').value.trim() || "";
-        const tipoPaquete = document.getElementById('tipoPaquete').value;
-        let originCoords;
-        try { const pos = await getPosition(); originCoords = { lat: pos.coords.latitude, lng: pos.coords.longitude }; }
-        catch(e) { originCoords = { lat: TUXTLA[0], lng: TUXTLA[1] }; }
-        const newOrderRef = db.ref('orders').push();
-        await newOrderRef.set({
-            clientId: currentUser.uid, clientEmail: currentUser.email, clientName: currentUser.email.split('@')[0],
-            destino: selectedDestAddress, destinoCoords: selectedDestCoords, origenCoords: originCoords,
-            descripcion, pago, telefono, nombreDestino, tipoPaquete,
-            status: 'pendiente', timestamp: Date.now(), driverId: null
-        });
-        if(window.destMarker) map.removeLayer(window.destMarker);
-        selectedDestCoords = null;
-        document.getElementById('selectedLocationDisplay').innerHTML = '<i class="fas fa-info-circle"></i> Haz clic en el mapa';
-        document.getElementById('descripcionMandado').value = '';
-        document.getElementById('precioEstimado').value = '';
-        document.getElementById('telefonoDestino').value = '';
-        document.getElementById('nombreDestino').value = '';
-        showNotification('¡Pedido creado!', 'Mandado publicado', 'success');
-        loadClientActiveOrders();
-    }
-
-    async function loadClientActiveOrders() { /* Versión simplificada pero funcional */ 
-        if(!currentUser || currentRole !== 'cliente') return;
-        const snapshot = await db.ref('orders').orderByChild('clientId').equalTo(currentUser.uid).once('value');
-        const container = document.getElementById('activeOrdersList');
-        let html = '', activeCount = 0;
-        snapshot.forEach(child => {
-            const o = child.val();
-            if(o.status === 'pendiente' || o.status === 'aceptado' || o.status === 'enCamino') {
-                activeCount++;
-                html += `<div class="order-item"><div><strong>${o.destino.substring(0,40)}</strong><br><span class="status-badge status-${o.status}">${o.status}</span> 💰 ${o.pago}</div><button class="cancel-order-btn" data-id="${child.key}"><i class="fas fa-times"></i> Cancelar</button><button class="detail-btn" onclick="showOrderDetail('${child.key}')"><i class="fas fa-info"></i> Detalles</button></div>`;
-            }
-        });
-        container.innerHTML = html || "<i class='fas fa-inbox'></i> Sin pedidos";
-        document.getElementById('activeOrdersCount').innerText = activeCount;
-        document.querySelectorAll('.cancel-order-btn').forEach(btn => btn.addEventListener('click', (e) => cancelOrder(btn.dataset.id)));
-    }
-
-    async function cancelOrder(orderId) {
-        const result = await Swal.fire({ title: '¿Cancelar?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#dc3545' });
-        if(result.isConfirmed) { await db.ref(`orders/${orderId}`).update({ status: 'cancelado' }); showNotification('Cancelado', 'Pedido cancelado', 'info'); loadClientActiveOrders(); loadClientHistory(); }
-    }
-
-    async function loadClientHistory() {
-        if(!currentUser || currentRole !== 'cliente') return;
-        const snapshot = await db.ref('orders').orderByChild('clientId').equalTo(currentUser.uid).once('value');
-        let orders = [];
-        snapshot.forEach(child => orders.push({ id: child.key, ...child.val() }));
-        const filtered = orders.filter(o => currentFilter === 'todos' || o.status === currentFilter);
-        const historyDiv = document.getElementById('historialCliente');
-        let html = '';
-        filtered.forEach(o => { html += `<div class="history-item"><i class="fas ${o.status === 'entregado' ? 'fa-check-circle' : 'fa-times-circle'}" style="color:${o.status === 'entregado' ? '#28a745' : '#dc3545'}"></i> ${o.destino.substring(0,35)} - ${moment(o.timestamp).format('DD/MM')} | ${o.pago} | ${o.status}</div>`; });
-        historyDiv.innerHTML = html || "<i class='fas fa-history'></i> Sin historial";
-    }
-
-    async function acceptOrder(orderId) {
-        if(!currentUser || currentRole !== 'motomandado') return;
-        const orderRef = db.ref(`orders/${orderId}`);
-        const snap = await orderRef.once('value');
-        if(snap.val()?.status !== 'pendiente') return Swal.fire('Error', 'No disponible', 'error');
-        await orderRef.update({ driverId: currentUser.uid, status: 'aceptado', acceptedAt: Date.now() });
-        showNotification('Aceptado', 'Mandado asignado', 'success');
-        loadMotoActiveDeliveries();
-    }
-
-    async function loadMotoActiveDeliveries() {
-        if(!currentUser || currentRole !== 'motomandado') return;
-        const snapshot = await db.ref('orders').orderByChild('driverId').equalTo(currentUser.uid).once('value');
-        const container = document.getElementById('myAssignedDeliveries');
-        let html = '', count = 0;
-        snapshot.forEach(child => {
-            const o = child.val();
-            if(o.status === 'aceptado' || o.status === 'enCamino') {
-                count++;
-                html += `<div class="delivery-item"><div><strong>${o.destino.substring(0,35)}</strong><br>💰 ${o.pago}</div><button class="complete-btn" data-id="${child.key}"><i class="fas fa-flag-checkered"></i> Entregar</button></div>`;
-                motoActiveDeliveries.set(child.key, o);
-            }
-        });
-        container.innerHTML = html || "<i class='fas fa-inbox'></i> Sin entregas";
-        document.getElementById('myDeliveriesCount').innerText = count;
-        document.querySelectorAll('.complete-btn').forEach(btn => btn.addEventListener('click', async () => {
-            await db.ref(`orders/${btn.dataset.id}`).update({ status: 'entregado', completedAt: Date.now() });
-            showNotification('Completado', 'Entrega finalizada', 'success');
-            loadMotoActiveDeliveries();
-            loadMotoStats();
-        }));
-    }
-
-    async function loadMotoStats() {
-        if(!currentUser || currentRole !== 'motomandado') return;
-        const stats = (await db.ref(`users/${currentUser.uid}/stats`).once('value')).val() || { deliveries: 0, earnings: 0 };
-        document.getElementById('statsGrid').innerHTML = `<div class="stat-card"><div class="stat-number">${stats.deliveries}</div><div>Entregas</div></div><div class="stat-card"><div class="stat-number">$${stats.earnings}</div><div>Ganancias</div></div>`;
-        document.getElementById('statsMoto').innerHTML = `<div class="info-card">Última entrega: ${stats.lastDelivery ? moment(stats.lastDelivery).format('DD/MM/YYYY') : 'Ninguna'}</div>`;
-    }
-
-    function loadAvailableOrders() {
-        if(!currentUser || currentRole !== 'motomandado') return;
-        db.ref('orders').on('value', (snap) => {
-            const orders = snap.val();
-            const container = document.getElementById('availableOrdersList');
-            if(!container) return;
-            let html = '', count = 0;
-            for(let id in orders) {
-                if(orders[id].status === 'pendiente' && !orders[id].driverId) {
-                    count++;
-                    html += `<div class="delivery-item"><div><strong>${orders[id].destino.substring(0,40)}</strong><br>💰 ${orders[id].pago}</div><button class="accept-btn" data-id="${id}"><i class="fas fa-check"></i> Aceptar</button></div>`;
-                }
-            }
-            container.innerHTML = html || "<i class='fas fa-clock'></i> No hay pedidos";
-            document.getElementById('availableCount').innerText = count;
-            document.querySelectorAll('.accept-btn').forEach(btn => btn.addEventListener('click', (e) => acceptOrder(btn.dataset.id)));
-        });
-    }
-
-    async function loadAdminStats() {
-        const usersSnap = await db.ref('users').once('value');
-        const ordersSnap = await db.ref('orders').once('value');
-        let users = 0, totalOrders = 0, completed = 0;
-        usersSnap.forEach(() => users++);
-        ordersSnap.forEach(o => { totalOrders++; if(o.val().status === 'entregado') completed++; });
-        document.getElementById('adminStats').innerHTML = `<div class="stat-card"><div class="stat-number">${users}</div><div>Usuarios</div></div><div class="stat-card"><div class="stat-number">${totalOrders}</div><div>Pedidos</div></div><div class="stat-card"><div class="stat-number">${completed}</div><div>Completados</div></div>`;
-    }
-
-    function applyUI() {
-        const isCliente = currentRole === 'cliente';
-        const isMoto = currentRole === 'motomandado';
-        const isAdmin = currentRole === 'admin';
-        document.getElementById('clientePanel').style.display = isCliente ? 'block' : 'none';
-        document.getElementById('motomandadoPanel').style.display = isMoto ? 'block' : 'none';
-        document.getElementById('adminPanel').style.display = isAdmin ? 'block' : 'none';
-        document.getElementById('clienteTabs').style.display = isCliente ? 'flex' : 'none';
-        document.getElementById('motoTabs').style.display = isMoto ? 'flex' : 'none';
-        document.getElementById('adminTabs').style.display = isAdmin ? 'flex' : 'none';
-        document.getElementById('configPanel').style.display = 'none';
-        document.getElementById('roleBadge').innerHTML = isCliente ? '<i class="fas fa-user"></i> Cliente' : (isMoto ? '<i class="fas fa-motorcycle"></i> Moto' : '<i class="fas fa-crown"></i> Admin');
-        if(isCliente) { loadClientActiveOrders(); loadClientHistory(); }
-        if(isMoto) { loadAvailableOrders(); loadMotoActiveDeliveries(); loadMotoStats(); }
-        if(isAdmin) { loadAdminStats(); }
-    }
-
-    async function switchRole() {
-        const roles = ['cliente', 'motomandado', 'admin'];
-        const newRole = roles[(roles.indexOf(currentRole) + 1) % roles.length];
-        await db.ref(`users/${currentUser.uid}/role`).set(newRole);
-        currentRole = newRole;
-        applyUI();
-        Swal.fire('Rol cambiado', `Ahora eres ${currentRole}`, 'success');
-    }
-
-    function showConfig() {
-        document.getElementById('clientePanel').style.display = 'none';
-        document.getElementById('motomandadoPanel').style.display = 'none';
-        document.getElementById('adminPanel').style.display = 'none';
-        document.getElementById('clienteTabs').style.display = 'none';
-        document.getElementById('motoTabs').style.display = 'none';
-        document.getElementById('adminTabs').style.display = 'none';
-        document.getElementById('configPanel').style.display = 'block';
-        document.getElementById('configUserEmail').innerText = currentUser?.email || '';
-        document.getElementById('configCurrentRole').innerText = currentRole;
-        document.getElementById('memberSince').innerText = moment(currentUser?.metadata?.creationTime).format('DD/MM/YYYY');
-    }
-
-    async function logout() {
-        if(watchPositionId) navigator.geolocation.clearWatch(watchPositionId);
-        if(currentUser) await db.ref(`users/${currentUser.uid}/location`).remove();
-        await auth.signOut();
-        location.reload();
-    }
-
-    window.showOrderDetail = async function(orderId) {
-        const snap = await db.ref(`orders/${orderId}`).once('value');
-        const o = snap.val();
-        if(!o) return;
-        document.getElementById('modalTitle').innerText = `Pedido #${orderId.substring(0,6)}`;
-        document.getElementById('modalBody').innerHTML = `<p><strong>Destino:</strong> ${o.destino}</p><p><strong>Descripción:</strong> ${o.descripcion}</p><p><strong>Pago:</strong> ${o.pago}</p><p><strong>Estado:</strong> ${o.status}</p>`;
-        document.getElementById('orderDetailModal').style.display = 'flex';
-    };
-    window.closeModal = () => document.getElementById('orderDetailModal').style.display = 'none';
-
-    // Autenticación
-    auth.onAuthStateChanged(async (user) => {
-        if(user) {
-            currentUser = user;
-            const roleSnap = await db.ref(`users/${user.uid}/role`).once('value');
-            currentRole = roleSnap.val() || 'cliente';
-            if(!roleSnap.exists()) await db.ref(`users/${user.uid}/role`).set('cliente');
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('appMain').style.display = 'flex';
-            initMap();
-            await updateLocation();
-            startTracking();
-            applyUI();
-            notificaciones = getCache(`notif_${user.uid}`, 86400000) || [];
-            document.getElementById('notifCount').innerText = notificaciones.length;
-        } else {
-            document.getElementById('authScreen').style.display = 'flex';
-            document.getElementById('appMain').style.display = 'none';
         }
-    });
 
-    // Eventos
-    document.getElementById('loginBtn').addEventListener('click', async () => {
-        const email = document.getElementById('emailInput').value, pwd = document.getElementById('passwordInput').value, role = document.getElementById('roleSelect').value;
-        if(!email || !pwd) return document.getElementById('authMessage').innerText = "Completa campos";
-        try {
-            await auth.signInWithEmailAndPassword(email, pwd);
-            await db.ref(`users/${auth.currentUser.uid}/role`).set(role);
-        } catch(err) {
-            if(err.code === 'auth/user-not-found') {
-                await auth.createUserWithEmailAndPassword(email, pwd);
-                await db.ref(`users/${auth.currentUser.uid}/role`).set(role);
-            } else document.getElementById('authMessage').innerText = err.message;
+        // Toast
+        function showToast(msg, duration) {
+            const toast = document.createElement('div');
+            toast.textContent = msg;
+            toast.style.position = 'fixed';
+            toast.style.bottom = '70px';
+            toast.style.left = '50%';
+            toast.style.transform = 'translateX(-50%)';
+            toast.style.background = '#333';
+            toast.style.color = 'white';
+            toast.style.padding = '10px 20px';
+            toast.style.borderRadius = '30px';
+            toast.style.zIndex = '2000';
+            toast.style.fontSize = '0.85rem';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), duration);
         }
-    });
-    document.getElementById('solicitarMandadoBtn')?.addEventListener('click', requestOrder);
-    document.getElementById('logoutMainBtn')?.addEventListener('click', logout);
-    document.getElementById('switchRoleBtn')?.addEventListener('click', switchRole);
-    document.getElementById('configMainBtn')?.addEventListener('click', showConfig);
-    document.getElementById('clearCacheBtn')?.addEventListener('click', () => { localStorage.clear(); Swal.fire('Caché limpia', 'Datos eliminados', 'success'); });
-    document.getElementById('toggleMapBtn')?.addEventListener('click', toggleMap);
-    document.getElementById('addFavoritoBtn')?.addEventListener('click', () => { if(selectedDestCoords) { Swal.fire('Guardado', 'Dirección guardada en favoritos', 'success'); } else Swal.fire('Error', 'Selecciona un destino primero', 'warning'); });
-    document.getElementById('notifBtn')?.addEventListener('click', () => { Swal.fire('Notificaciones', notificaciones.map(n => `${n.title}: ${n.message}`).join('\n') || 'Sin notificaciones', 'info'); });
-    
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            currentFilter = btn.dataset.filter;
-            loadClientHistory();
-        });
-    });
 
-    function setupTabs(prefix, tabClass, panelClass) {
-        document.querySelectorAll(tabClass).forEach(tab => {
-            tab.addEventListener('click', () => {
-                document.querySelectorAll(tabClass).forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                document.querySelectorAll(panelClass).forEach(p => p.classList.remove('active'));
-                document.getElementById(`${prefix}Tab${tab.dataset.tab.charAt(0).toUpperCase() + tab.dataset.tab.slice(1)}`).classList.add('active');
+        // Event listeners para navegación offline
+        document.querySelectorAll('.offline-nav-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                loadOfflineSection(btn.dataset.section);
             });
         });
-    }
-    setupTabs('', '#clienteTabs .tab', '#clientePanel .panel-content');
-    setupTabs('moto', '#motoTabs .tab', '#motomandadoPanel .panel-content');
-    setupTabs('admin', '#adminTabs .tab', '#adminPanel .panel-content');
-
-    setTimeout(() => initMap(), 100);
-</script>
+        
+        // Manejar cambios en el historial (botones atrás/adelante)
+        window.addEventListener('popstate', () => {
+            if (navigator.onLine) {
+                redirectIframeToUrlParams();
+            } else {
+                const params = getCurrentUrlParams();
+                let sectionToLoad = 'inicio';
+                if (params.section) {
+                    const sectionMap = {
+                        'guias': 'guias',
+                        'sanidad': 'sanidad',
+                        'alimentacion': 'alimentacion',
+                        'emergencia': 'emergencia'
+                    };
+                    sectionToLoad = sectionMap[params.section] || 'inicio';
+                }
+                loadOfflineSection(sectionToLoad);
+            }
+        });
+        
+        // Inicialización
+        async function init() {
+            await registerSW();
+            
+            // APLICAR REDIRECCIÓN POR URL PERSONALIZADA AL INICIO
+            const targetUrl = buildBlogUrlWithParams();
+            iframe.src = targetUrl;
+            console.log(`🚀 Inicializado con URL destino: ${targetUrl}`);
+            
+            setMode(navigator.onLine);
+            
+            // Mostrar loader del iframe por unos segundos
+            setTimeout(() => {
+                iframeLoader.style.display = 'none';
+            }, 5000);
+        }
+        
+        init();
+    </script>
 </body>
 </html>
